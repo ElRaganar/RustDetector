@@ -4,6 +4,9 @@ import company2 from "../assets/company2.png";
 import company3 from "../assets/company3.jpg";
 import company4 from "../assets/company4.png";
 import { Brain, ClipboardMinus, FileUp, Play } from 'lucide-react';
+import { SignedOut, SignedIn, UserButton } from "@clerk/clerk-react";
+import { Link } from "react-router-dom";
+
 
 
 const Landing = () => {
@@ -25,6 +28,30 @@ const Landing = () => {
         />
 
         <div className="absolute inset-0 bg-black/40" />
+
+        <div className="absolute top-6 right-6 z-20 flex gap-4">
+  <div className="absolute top-6 right-6 z-20 flex gap-4 items-center">
+  <SignedOut>
+    <Link to="/sign-in">
+      <button className="px-4 py-2 text-white border border-white/60 rounded-xl hover:bg-white/10">
+        Login
+      </button>
+    </Link>
+
+    <Link to="/sign-up">
+      <button className="px-6 py-2 bg-alert-orange text-white rounded-xl hover:opacity-80">
+        Sign Up
+      </button>
+    </Link>
+  </SignedOut>
+
+  <SignedIn>
+    <UserButton afterSignOutUrl="/" />
+  </SignedIn>
+</div>
+
+</div>
+
 
         <div className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-6">
           <h1 className="text-white text-4xl md:text-6xl font-bold mb-15">
