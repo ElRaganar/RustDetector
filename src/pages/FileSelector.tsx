@@ -1,47 +1,73 @@
-import React from 'react'
-import CameraCard from '../pages/cameracard'
-import BrowseFilesCard from '../pages/BrowserFileCard'
-import DragDropCard from '../pages/Draganddropcard'
+import { useRef, useState } from "react";
+import Header from "./Header";
+import FileGrid from "./FilePreview";
+import SummaryBar from "./SummaryBar";
 
-type ChooseUploadMethodProps = {
-  onClose: () => void;
+type PreviewFile = {
+  file: File;
+  url: string;
+  valid: boolean;
 };
 
-const FileSelector = ({ onClose }: ChooseUploadMethodProps) => {
-    return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      
-      {/* Modal */}
-      <div className="relative w-full max-w-[900px] bg-white rounded-2xl p-10">
-        
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-        >
-          ✕
-        </button>
+export default function FileSelector({ onClose }: { onClose: () => void | Promise<void> } ) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [files, setFiles] = useState<PreviewFile[]>([]);
+  const [loading, setLoading] = useState(false);
 
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-800">
-            Choose Your Upload Method
-          </h2>
-          <p className="text-gray-500 mt-2">
-            Select how you'd like to upload images for rust analysis
-          </p>
-        </div>
+  const openFileDialog = () => {
+    setLoading(true);
+    setTimeout(() => {
+      inputRef.current?.click();
+      setLoading(false);
+    }, 500);
+  };
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <BrowseFilesCard />
-          <DragDropCard />
-          <CameraCard />
-        </div>
+  const handleFiles = (selected: FileList | null) => {
+    if (!selected) return;
 
-      </div>
+    const processed = Array.from(selected).map((file) => {
+      const valid =
+        ["image/jpeg", "image/png", "image/tiff"].includes(file.type) &&
+        file.size <= 10 * 1024 * 1024;
+
+      return {
+        file,
+        valid,
+        url: URL.createObjectURL(file),
+      };
+    });
+
+    setFiles((prev) => [...prev, ...processed]);
+  };
+
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div className="p-8">
+      {/* Hidden input */}
+      <input
+        ref={inputRef}
+        type="file"
+        multiple
+        accept="image/jpeg,image/png,image/tiff"
+        className="hidden"
+        onChange={(e) => handleFiles(e.target.files)}
+      />
+
+      {/* Loading state */}
+      {loading && (
+        <p className="mb-4 text-sm text-gray-500">
+          Opening file browser...
+        </p>
+      )}
+
+      <Header count={files.length} />
+
+      <FileGrid files={files} onRemove={removeFile} />
+
+      <SummaryBar files={files} onAddMore={openFileDialog} />
     </div>
-  )
+  );
 }
-
-export default FileSelector;
