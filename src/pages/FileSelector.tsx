@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import FileGrid from "./FilePreview";
 import SummaryBar from "./SummaryBar";
@@ -9,7 +10,8 @@ type PreviewFile = {
   valid: boolean;
 };
 
-export default function FileSelector({ onClose }: { onClose: () => void | Promise<void> } ) {
+export default function FileSelector() {
+  const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [files, setFiles] = useState<PreviewFile[]>([]);
   const [loading, setLoading] = useState(false);
@@ -46,7 +48,6 @@ export default function FileSelector({ onClose }: { onClose: () => void | Promis
 
   return (
     <div className="p-8">
-      {/* Hidden input */}
       <input
         ref={inputRef}
         type="file"
@@ -56,18 +57,21 @@ export default function FileSelector({ onClose }: { onClose: () => void | Promis
         onChange={(e) => handleFiles(e.target.files)}
       />
 
-      {/* Loading state */}
       {loading && (
-        <p className="mb-4 text-sm text-gray-500">
-          Opening file browser...
-        </p>
+        <p className="mb-4 text-sm text-gray-500">Opening file browser...</p>
       )}
 
       <Header count={files.length} />
 
       <FileGrid files={files} onRemove={removeFile} />
 
-      <SummaryBar files={files} onAddMore={openFileDialog} />
+      <SummaryBar
+        files={files}
+        onAddMore={openFileDialog}
+        onContinue={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
     </div>
   );
 }

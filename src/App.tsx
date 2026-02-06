@@ -8,6 +8,8 @@ import ChooseUploadMethod from "./pages/ChooseUpload";
 
 import { SignedIn, SignIn, SignUp } from "@clerk/clerk-react";
 import RecentScans from "./pages/dashboard/RecentScans";
+import DragandDrop from "./pages/DragandDrop";
+import CameraCapture from "./pages/cameracapture";
 
 function App() {
   const navigate = useNavigate();
@@ -33,25 +35,39 @@ function App() {
           </SignedIn>
         }
       />
-      {/* Dashboard
-      <Route path="/dashboard" element={<Dashboard />} /> */}
-      {/* <Route
-        path="/chooseupload"
-        element={
-          <ChooseUploadMethod
-            onClose={() => navigate("/dashboard")}
-          />
-        }
-      />
 
       <Route
-        path="/fileselector"
+        path="/dashboard/fileselector"
         element={
-          <FileSelector
-            onClose={() => navigate("/chooseupload")}
-          />
+          <SignedIn>
+            <FileSelector />
+          </SignedIn>
         }
-      /> */}
+      />
+      <Route
+        path="/dashboard/dragdrop"
+        element={
+          <SignedIn>
+            <DragandDrop
+              onFiles={(files) => {
+                console.log("Dropped files:", files);
+              }}
+            />
+          </SignedIn>
+        }
+      />
+      <Route
+        path="/dashboard/camera"
+        element={
+          <SignedIn>
+            <CameraCapture
+              onCapture={(files) => {
+                console.log("Captured:", files);
+              }}
+            />
+          </SignedIn>
+        }
+      />
     </Routes>
   );
 }

@@ -1,22 +1,13 @@
-import React, { useRef, useState } from 'react'
-type DropState = "idle" | "dragging" | "dropped" | "success";
+import { useRef, useState } from "react";
+import DropZoneContent from "./DropZone";
 
-interface DropZoneContentProps {
-  state: DropState;
-  count: number;
+type DropState = "idle" | "dragging" | "success";
+
+interface DragDropZoneProps {
+  onFiles: (files: FileList) => void;
 }
 
-const DropZoneContent = ({ state, count }: DropZoneContentProps) => {
-  return (
-    <div className="text-center">
-      <p className="text-lg font-semibold text-gray-700">
-        {state === "dragging" ? `Drop ${count} file(s)` : "Drag files here or click to browse"}
-      </p>
-    </div>
-  );
-}
-
-function DragDropZone({ onFiles }: { onFiles: (files: FileList) => void }) {
+const DragAndDrop = ({ onFiles }: DragDropZoneProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [state, setState] = useState<DropState>("idle");
   const [count, setCount] = useState(0);
@@ -34,20 +25,26 @@ function DragDropZone({ onFiles }: { onFiles: (files: FileList) => void }) {
       }}
       onDrop={(e) => {
         e.preventDefault();
+        const files = e.dataTransfer.files;
+
+        setCount(files.length);
         setState("success");
-        onFiles(e.dataTransfer.files);
-        setTimeout(() => setState("dropped"), 300);
+        onFiles(files);
+
+        setTimeout(() => setState("idle"), 1500);
       }}
       onClick={() => inputRef.current?.click()}
       className={`
-        relative mx-auto flex min-h-[400px] max-w-[800px] cursor-pointer
-        flex-col items-center justify-center rounded-2xl border-4
-        transition-all duration-300
+        relative mx-auto flex min-h-[300px] max-w-[700px]
+        cursor-pointer items-center justify-center rounded-2xl
+        border-4 transition-all duration-300
 
         ${
           state === "dragging"
             ? "border-orange-500 bg-orange-50"
-            : "border-orange-400/50 border-dashed bg-white"
+            : state === "success"
+              ? "border-green-500 bg-green-50"
+              : "border-orange-400/50 border-dashed bg-white"
         }
       `}
     >
@@ -57,11 +54,18 @@ function DragDropZone({ onFiles }: { onFiles: (files: FileList) => void }) {
         multiple
         accept="image/jpeg,image/png,image/tiff"
         className="hidden"
-        onChange={(e) => e.target.files && onFiles(e.target.files)}
+        onChange={(e) => {
+          if (!e.target.files) return;
+          setCount(e.target.files.length);
+          setState("success");
+          onFiles(e.target.files);
+          setTimeout(() => setState("idle"), 1500);
+        }}
       />
 
       <DropZoneContent state={state} count={count} />
     </div>
   );
-}
-export default DragDropZone;
+};
+
+export default DragAndDrop;

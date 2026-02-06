@@ -88,7 +88,6 @@ const Landing = () => {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-left">
-            {/* Step 1 */}
             <div className="flex gap-5 p-6 rounded-2xl border border-border-gray shadow-sm hover:shadow-md transition bg-card-white">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-processing-amber/20 text-processing-amber">
                 <FileUp size={26} />
@@ -105,7 +104,6 @@ const Landing = () => {
               </div>
             </div>
 
-            {/* Step 2 */}
             <div className="flex gap-5 p-6 rounded-2xl border border-border-gray shadow-sm hover:shadow-md transition bg-card-white">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-processing-amber/20 text-processing-amber">
                 <Brain size={26} />
@@ -122,7 +120,6 @@ const Landing = () => {
               </div>
             </div>
 
-            {/* Step 3 */}
             <div className="flex gap-5 p-6 rounded-2xl border border-border-gray shadow-sm hover:shadow-md transition bg-card-white">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-processing-amber/20 text-processing-amber">
                 <ClipboardMinus size={26} />

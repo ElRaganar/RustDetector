@@ -1,17 +1,14 @@
-
-
-
 const BrowseFilesCard = () => {
- return (
+  return (
     <div
       className="group relative cursor-pointer rounded-xl border-2 border-gray-200 bg-white p-8 transition
                  hover:-translate-y-1 hover:border-orange-500 hover:shadow-lg
                  hover:bg-orange-50"
     >
-
-      {/* Icon */}
-      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 text-3xl text-orange-600
-                      group-hover:animate-pulse">
+      <div
+        className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 text-3xl text-orange-600
+                      group-hover:animate-pulse"
+      >
         ☁️⬆️
       </div>
 
@@ -39,8 +36,7 @@ const BrowseFilesCard = () => {
         Drop files here to upload
       </div>
     </div>
-  )
-}
-
+  );
+};
 
 export default BrowseFilesCard;

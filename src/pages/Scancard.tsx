@@ -14,7 +14,6 @@ const severityColors: any = {
 const ScanCard = ({ scan }: any) => {
   return (
     <div className="bg-white rounded-2xl border shadow-sm hover:shadow-md transition">
-      {/* Image */}
       <div className="h-40 w-full overflow-hidden rounded-t-2xl bg-gray-100">
         <img
           src={scan.image}
@@ -23,7 +22,6 @@ const ScanCard = ({ scan }: any) => {
         />
       </div>
 
-      {/* Content */}
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-medium text-sm truncate">{scan.name}</h3>
