@@ -1,15 +1,10 @@
 import React from "react";
-import company1 from "../assets/company1.jpg";
-import company2 from "../assets/company2.png";
-import company3 from "../assets/company3.jpg";
-import company4 from "../assets/company4.png";
+
 import { Brain, ClipboardMinus, FileUp, Play } from "lucide-react";
 import { SignedOut, SignedIn, UserButton } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
 
 const Landing = () => {
-  const logos = [company1, company2, company3, company4];
-
   return (
     <>
       <section className="relative min-h-screen overflow-hidden bg-page-bg">
@@ -64,13 +59,12 @@ const Landing = () => {
               </Link>
             </SignedOut>
 
-            <button className="px-4 py-3 bg-processing-amber text-card-white rounded-2xl">
-              Watch Demo
-            </button>
             <Link to="/dashboard">
-              <button className="px-4 py-3 bg-processing-amber text-card-white rounded-2xl">
-                Dashboard
-              </button>
+              <SignedIn>
+                <button className="px-4 py-3 bg-processing-amber text-card-white rounded-2xl">
+                  Dashboard
+                </button>
+              </SignedIn>
             </Link>
           </div>
         </div>

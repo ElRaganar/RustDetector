@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 interface PreviewFile {
   file: File;
   url: string;
@@ -15,7 +17,7 @@ const SummaryBar = ({
 }) => {
   const totalSize = files.reduce((s, f) => s + f.file.size, 0);
   const invalidCount = files.filter((f) => !f.valid).length;
-
+  const navigate = useNavigate();
   return (
     <div
       className="sticky bottom-0 mt-6 flex items-center justify-between
@@ -46,8 +48,8 @@ const SummaryBar = ({
         </button>
 
         <button
-          disabled={invalidCount > 0}
-          onClick={onContinue}
+          // disabled={invalidCount > 0}
+          // onClick={() => navigate("/ai-progress")}
           className="
     rounded-lg
     bg-alert-orange

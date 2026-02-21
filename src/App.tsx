@@ -1,15 +1,17 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
 import "./index.css";
 
-import Landing from "./pages/Landing";
+import Landing from "./pages/Landing/Landing";
 import FileSelector from "./pages/FileSelector";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/dashboard/Dashboard";
 import ChooseUploadMethod from "./pages/ChooseUpload";
 
 import { SignedIn, SignIn, SignUp } from "@clerk/clerk-react";
 import RecentScans from "./pages/dashboard/RecentScans";
 import DragandDrop from "./pages/DragandDrop";
 import CameraCapture from "./pages/cameracapture";
+import AIProcessingScreen from "./pages/AIProcessingScreen";
+import Result from "./pages/ResultPage";
 
 function App() {
   const navigate = useNavigate();
@@ -44,7 +46,7 @@ function App() {
           </SignedIn>
         }
       />
-      <Route
+      {/* <Route
         path="/dashboard/dragdrop"
         element={
           <SignedIn>
@@ -55,7 +57,7 @@ function App() {
             />
           </SignedIn>
         }
-      />
+      /> */}
       <Route
         path="/dashboard/camera"
         element={
@@ -68,6 +70,7 @@ function App() {
           </SignedIn>
         }
       />
+      <Route path="/dashboard/results" element={<Result />} />
     </Routes>
   );
 }
