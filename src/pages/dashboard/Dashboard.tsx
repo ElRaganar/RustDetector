@@ -13,13 +13,12 @@ export interface PreviewFile {
 
 const Dashboard = () => {
   const [files, setFiles] = useState<PreviewFile[]>([]);
-  return (
-    <div className="flex h-screen bg-[#F8F9FB]">
-      <Sidebar />
 
+  return (
+    <div className="dash flex h-screen">
+      <Sidebar />
       <div className="flex-1 flex flex-col">
         <Topbar />
-
         <main className="flex-1 p-8 grid grid-cols-12 gap-6">
           <div className="col-span-12 xl:col-span-7">
             <UploadCard />

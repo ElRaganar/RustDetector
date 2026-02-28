@@ -70,7 +70,7 @@ function App() {
           </SignedIn>
         }
       />
-      <Route path="/dashboard/results" element={<Result />} />
+      <Route path="/results" element={<Result />} />
     </Routes>
   );
 }

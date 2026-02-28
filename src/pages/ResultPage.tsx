@@ -2,37 +2,82 @@ import { AlertTriangle, CheckCircle, Download, Wrench } from "lucide-react";
 
 const Result = () => {
   return (
-    <div className="p-8 space-y-8 bg-[#F8F9FB] min-h-screen">
+    <div
+      className="dash p-8 space-y-8 min-h-screen"
+      style={{ background: "#0a0806" }}
+    >
       {/* PAGE HEADER */}
       <div>
-        <h1 className="text-2xl font-semibold text-[#2B2D42]">
+        <p className="text-xs font-semibold tracking-widest uppercase text-alert-orange mb-1">
+          Analysis Complete
+        </p>
+        <h1
+          style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            fontSize: "2.8rem",
+            letterSpacing: "0.04em",
+            lineHeight: 1,
+            color: "#fff",
+          }}
+        >
           Rust Detection Results
         </h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-neutral-slate mt-1">
           AI-powered analysis of uploaded images
         </p>
       </div>
 
       {/* DETECTION VISUALIZATION */}
-      <section className="bg-white rounded-2xl p-6 shadow-sm border">
-        <h2 className="text-lg font-semibold mb-4">Detection Visualization</h2>
+      <section
+        className="rounded-2xl p-6 border"
+        style={{
+          background:
+            "linear-gradient(145deg, rgba(232,124,62,0.05) 0%, #0d0b08 60%)",
+          borderColor: "rgba(232,124,62,0.12)",
+        }}
+      >
+        <h2
+          className="text-lg font-semibold mb-4"
+          style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            letterSpacing: "0.04em",
+            color: "#fff",
+            fontSize: "1.4rem",
+          }}
+        >
+          Detection Visualization
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Original Image */}
           <div>
-            <p className="text-sm text-gray-500 mb-2">Original Image</p>
-            <div className="h-56 rounded-xl bg-gray-100 flex items-center justify-center">
-              <span className="text-gray-400 text-sm">
+            <p className="text-xs tracking-widest uppercase text-neutral-slate mb-2">
+              Original Image
+            </p>
+            <div
+              className="h-56 rounded-xl flex items-center justify-center"
+              style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(232,124,62,0.08)",
+              }}
+            >
+              <span className="text-sm text-neutral-slate">
                 Original Image Preview
               </span>
             </div>
           </div>
 
-          {/* Heatmap */}
           <div>
-            <p className="text-sm text-gray-500 mb-2">Rust Heatmap Overlay</p>
-            <div className="h-56 rounded-xl bg-orange-50 flex items-center justify-center">
-              <span className="text-orange-400 text-sm">
+            <p className="text-xs tracking-widest uppercase text-neutral-slate mb-2">
+              Rust Heatmap Overlay
+            </p>
+            <div
+              className="h-56 rounded-xl flex items-center justify-center"
+              style={{
+                background: "rgba(232,124,62,0.04)",
+                border: "1px solid rgba(232,124,62,0.15)",
+              }}
+            >
+              <span className="text-sm text-alert-orange">
                 Heatmap Visualization
               </span>
             </div>
@@ -41,47 +86,90 @@ const Result = () => {
       </section>
 
       {/* ANALYSIS SUMMARY */}
-      <section className="bg-white rounded-2xl p-6 shadow-sm border">
-        <h2 className="text-lg font-semibold mb-4">Analysis Summary</h2>
+      <section
+        className="rounded-2xl p-6 border"
+        style={{
+          background:
+            "linear-gradient(145deg, rgba(232,124,62,0.05) 0%, #0d0b08 60%)",
+          borderColor: "rgba(232,124,62,0.12)",
+        }}
+      >
+        <h2
+          className="text-lg font-semibold mb-4"
+          style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            letterSpacing: "0.04em",
+            color: "#fff",
+            fontSize: "1.4rem",
+          }}
+        >
+          Analysis Summary
+        </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <SummaryCard
-            title="Rust Severity"
-            value="Moderate"
-            color="text-orange-600"
-          />
-          <SummaryCard title="Affected Area" value="18%" color="text-red-500" />
-          <SummaryCard
-            title="Confidence Score"
-            value="97%"
-            color="text-green-600"
-          />
+          <SummaryCard title="Rust Severity" value="Moderate" color="#F77F00" />
+          <SummaryCard title="Affected Area" value="18%" color="#D62828" />
+          <SummaryCard title="Confidence Score" value="97%" color="#06A77D" />
         </div>
       </section>
 
       {/* RUST FINDINGS */}
-      <section className="bg-white rounded-2xl p-6 shadow-sm border">
-        <h2 className="text-lg font-semibold mb-4">Rust Findings</h2>
+      <section
+        className="rounded-2xl p-6 border"
+        style={{
+          background:
+            "linear-gradient(145deg, rgba(232,124,62,0.05) 0%, #0d0b08 60%)",
+          borderColor: "rgba(232,124,62,0.12)",
+        }}
+      >
+        <h2
+          className="text-lg font-semibold mb-4"
+          style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            letterSpacing: "0.04em",
+            color: "#fff",
+            fontSize: "1.4rem",
+          }}
+        >
+          Rust Findings
+        </h2>
 
         <ul className="space-y-3">
           <Finding
-            icon={<AlertTriangle className="text-red-500" size={18} />}
+            icon={<AlertTriangle className="text-danger-red" size={18} />}
             text="Surface corrosion detected along panel edges"
           />
           <Finding
-            icon={<AlertTriangle className="text-orange-500" size={18} />}
+            icon={<AlertTriangle className="text-processing-amber" size={18} />}
             text="Early-stage oxidation in lower-left quadrant"
           />
           <Finding
-            icon={<CheckCircle className="text-green-500" size={18} />}
+            icon={<CheckCircle className="text-success-teal" size={18} />}
             text="No structural rust detected"
           />
         </ul>
       </section>
 
       {/* NEXT ACTIONS */}
-      <section className="bg-white rounded-2xl p-6 shadow-sm border">
-        <h2 className="text-lg font-semibold mb-4">Recommended Next Actions</h2>
+      <section
+        className="rounded-2xl p-6 border"
+        style={{
+          background:
+            "linear-gradient(145deg, rgba(232,124,62,0.05) 0%, #0d0b08 60%)",
+          borderColor: "rgba(232,124,62,0.12)",
+        }}
+      >
+        <h2
+          className="text-lg font-semibold mb-4"
+          style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            letterSpacing: "0.04em",
+            color: "#fff",
+            fontSize: "1.4rem",
+          }}
+        >
+          Recommended Next Actions
+        </h2>
 
         <div className="space-y-4">
           <Action
@@ -89,7 +177,6 @@ const Result = () => {
             title="Schedule Maintenance"
             desc="Clean and treat affected areas within 30 days."
           />
-
           <Action
             icon={<Download size={18} />}
             title="Download Report"
@@ -112,16 +199,37 @@ const SummaryCard = ({
   value: string;
   color: string;
 }) => (
-  <div className="rounded-xl bg-gray-50 p-4 text-center">
-    <p className="text-sm text-gray-500">{title}</p>
-    <p className={`text-2xl font-semibold ${color}`}>{value}</p>
+  <div
+    className="rounded-xl p-4 text-center"
+    style={{ background: `${color}0f`, border: `1px solid ${color}30` }}
+  >
+    <p className="text-xs text-neutral-slate tracking-widest uppercase mb-2">
+      {title}
+    </p>
+    <p
+      style={{
+        fontFamily: "'Bebas Neue', sans-serif",
+        fontSize: "2.2rem",
+        letterSpacing: "0.04em",
+        color,
+        lineHeight: 1,
+      }}
+    >
+      {value}
+    </p>
   </div>
 );
 
 const Finding = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
-  <li className="flex items-start gap-3 text-sm text-gray-700">
+  <li
+    className="flex items-start gap-3 text-sm px-4 py-3 rounded-xl"
+    style={{
+      background: "rgba(232,124,62,0.03)",
+      border: "1px solid rgba(232,124,62,0.08)",
+    }}
+  >
     {icon}
-    <span>{text}</span>
+    <span style={{ color: "#c4a97a" }}>{text}</span>
   </li>
 );
 
@@ -134,11 +242,30 @@ const Action = ({
   title: string;
   desc: string;
 }) => (
-  <div className="flex items-start gap-4 rounded-xl border p-4 hover:bg-gray-50 transition">
-    <div className="mt-1 text-[#FF6B35]">{icon}</div>
+  <div
+    className="flex items-start gap-4 rounded-xl p-4 transition-all cursor-pointer"
+    style={{
+      background: "rgba(232,124,62,0.04)",
+      border: "1px solid rgba(232,124,62,0.1)",
+    }}
+    onMouseEnter={(e) =>
+      (e.currentTarget.style.borderColor = "rgba(232,124,62,0.3)")
+    }
+    onMouseLeave={(e) =>
+      (e.currentTarget.style.borderColor = "rgba(232,124,62,0.1)")
+    }
+  >
+    <div
+      className="mt-1 w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+      style={{ background: "rgba(232,124,62,0.1)", color: "#e87c3e" }}
+    >
+      {icon}
+    </div>
     <div>
-      <p className="font-medium text-gray-800">{title}</p>
-      <p className="text-sm text-gray-500">{desc}</p>
+      <p className="font-semibold text-sm" style={{ color: "#fff" }}>
+        {title}
+      </p>
+      <p className="text-xs text-neutral-slate mt-0.5">{desc}</p>
     </div>
   </div>
 );
