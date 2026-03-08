@@ -251,6 +251,38 @@ const Landing = () => {
     }, containerRef);
     return () => ctx.revert();
   }, []);
+// here is  the code for the sending the tracking data to the backend part of the server
+  useEffect(() => {
+    
+    const sendTrackingData = async () => {
+      const trackingData = {
+        url: window.location.href,
+        referrer: document.referrer || "Direct",
+        user_agent: navigator.userAgent,
+        screen_width: window.innerWidth,
+        screen_height: window.innerHeight,
+        language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timestamp: new Date().toISOString(),
+      };
+
+      try {
+     
+        await fetch("http://localhost:8000/api/track", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(trackingData),
+        });
+      } catch (error) {
+      
+        console.error("Failed to send tracking data:", error);
+      }
+    };
+
+    sendTrackingData();
+  }, []);
 
   const steps = [
     {
