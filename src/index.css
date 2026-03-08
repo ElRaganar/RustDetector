@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -39,6 +40,10 @@
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
   --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.15);
 
+  /* Font Families */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+
   /* Animations */
   --animate-fade-in-up: fadeInUp 0.6s ease-out;
   --animate-pulse-scale: pulse-scale 2s ease-in-out infinite;
@@ -60,9 +65,52 @@
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.upload-btn {
+  @apply
+    w-40 h-12
+    flex items-center justify-center gap-2
+    border border-[#2B2D42]
+    rounded-xl
+    text-[#2B2D42]
+    font-medium
+    transition-all duration-200
+    hover:-translate-y-0.5
+    hover:shadow-md
+    active:translate-y-0
+    disabled:opacity-50
+    disabled:cursor-not-allowed;
+}
+
+
 @layer base {
   * {
-    @apply border-border-gray; /* Ensures box-sizing/borders play nice with Tailwind */
+    @apply border-border-gray;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -73,7 +121,7 @@
   }
 
   body {
-    font-family: 'Inter', 'Segoe UI', 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'DM Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
     @apply leading-relaxed text-deep-charcoal bg-page-bg overflow-x-hidden;
   }
 
@@ -90,24 +138,39 @@
   }
 
   button {
-    @apply cursor-pointer border-none ;
+    @apply cursor-pointer border-none;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-bold leading-tight text-deep-charcoal;
+  /* Display headings — use Bebas Neue for impact */
+  h1, h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400; /* Bebas Neue is already bold by design */
+    @apply leading-none tracking-wide text-deep-charcoal;
   }
 
   h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    @apply font-extrabold tracking-tight;
+    font-size: clamp(3rem, 7vw, 6rem);
+    letter-spacing: 0.02em;
   }
 
-  h2 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
-  h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
-  h4 { font-size: clamp(1.25rem, 2.5vw, 1.5rem); }
+  h2 {
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    letter-spacing: 0.02em;
+  }
+
+  /* Sub-headings stay in DM Sans for readability */
+  h3, h4, h5, h6 {
+    font-family: 'DM Sans', sans-serif;
+    @apply font-semibold leading-snug text-deep-charcoal;
+  }
+
+  h3 { font-size: clamp(1.25rem, 2.5vw, 1.6rem); }
+  h4 { font-size: clamp(1.1rem, 2vw, 1.3rem); }
 
   p {
-    @apply text-base text-neutral-slate leading-[1.7];
+    @apply text-base text-neutral-slate leading-[1.75];
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
   }
 
   :focus-visible {
@@ -145,9 +208,19 @@
   .text-shadow-hero {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
+
+  /* Utility classes for explicit font switching */
+  .font-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+  }
+
+  .font-body {
+    font-family: 'DM Sans', sans-serif;
+  }
 }
 
-/* Responsive adjustments using v4 @media syntax */
+/* Responsive adjustments */
 @media (width < 768px) {
   :root {
     --spacing-xl: 32px;
@@ -163,3 +236,92 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Dashboard dark theme ──────────────────────────────────── */
+.dash {
+  background: #0a0806 !important;
+  color: #c4a97a;
+}
+
+.dash main,
+.dash section {
+  background: #0a0806 !important;
+}
+
+/* Cards */
+.dash .bg-white,
+.dash [class*="bg-card"] {
+  background: #110e0a !important;
+  border-color: rgba(232, 124, 62, 0.12) !important;
+}
+
+/* Sidebar & Topbar */
+.dash aside,
+.dash header {
+  background: #0d0b08 !important;
+  border-color: rgba(232, 124, 62, 0.1) !important;
+}
+
+/* Headings */
+.dash h1, .dash h2, .dash h3,
+.dash h4, .dash h5, .dash h6 {
+  font-family: 'Bebas Neue', sans-serif !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.04em !important;
+  color: #ffffff !important;
+}
+
+/* Body text */
+.dash p, .dash span, .dash label,
+.dash button, .dash input, .dash li,
+.dash td, .dash th, .dash a {
+  font-family: 'DM Sans', sans-serif !important;
+}
+
+/* Text color tokens */
+.dash [class*="text-deep-charcoal"],
+.dash [class*="text-industrial-navy"] { color: #c4a97a !important; }
+.dash [class*="text-neutral-slate"]   { color: #7a6050 !important; }
+.dash [class*="text-alert-orange"],
+.dash [class*="text-processing-amber"]{ color: #e87c3e !important; }
+.dash [class*="text-success-teal"]    { color: #06A77D !important; }
+.dash [class*="text-danger-red"]      { color: #D62828 !important; }
+.dash [class*="text-caution-yellow"]  { color: #FCBF49 !important; }
+
+/* Buttons */
+.dash [class*="bg-alert-orange"],
+.dash [class*="bg-processing-amber"] {
+  background: #e87c3e !important;
+  color: #fff !important;
+}
+
+/* Borders */
+.dash [class*="border-border-gray"],
+.dash [class*="border-gray"],
+.dash [class*="border-deep-charcoal"] {
+  border-color: rgba(232, 124, 62, 0.12) !important;
+}
+
+/* Inputs */
+.dash input, .dash textarea, .dash select {
+  background: rgba(232, 124, 62, 0.05) !important;
+  border-color: rgba(232, 124, 62, 0.15) !important;
+  color: #c4a97a !important;
+}
+.dash input::placeholder,
+.dash textarea::placeholder { color: #3a2818 !important; }
+
+/* Shadows */
+.dash [class*="shadow"] {
+  box-shadow: 0 4px 20px rgba(232, 124, 62, 0.07) !important;
+}
+
+/* Dividers */
+.dash hr {
+  border-color: rgba(232, 124, 62, 0.08) !important;
+}
+
+/* Scrollbar */
+.dash ::-webkit-scrollbar { width: 4px; }
+.dash ::-webkit-scrollbar-track { background: #0a0806; }
+.dash ::-webkit-scrollbar-thumb { background: rgba(232, 124, 62, 0.25); border-radius: 4px; }

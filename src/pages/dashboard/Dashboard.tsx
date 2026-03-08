@@ -1,0 +1,35 @@
+import { useState } from "react";
+import Sidebar from "../../components/Sidebar";
+import Topbar from "../../components/Topbar";
+import StatsPanel from "./StatsPanel";
+import UploadCard from "./UploadCard";
+import PreviewFile from "../FilePreview";
+
+export interface PreviewFile {
+  file: File;
+  url: string;
+  valid: boolean;
+}
+
+const Dashboard = () => {
+  const [files, setFiles] = useState<PreviewFile[]>([]);
+
+  return (
+    <div className="dash flex h-screen">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Topbar />
+        <main className="flex-1 p-8 grid grid-cols-12 gap-6">
+          <div className="col-span-12 xl:col-span-7">
+            <UploadCard />
+          </div>
+          <div className="col-span-12 xl:col-span-5">
+            <StatsPanel />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

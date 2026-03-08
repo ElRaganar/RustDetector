@@ -1,26 +1,78 @@
+import { Route, Routes, useNavigate } from "react-router-dom";
+import "./index.css";
 
-import { Route, Routes } from 'react-router-dom';
-import './index.css'
-import Landing from './pages/Landing'
-import Dashboard from './pages/Dashboard'
-import {
-  SignIn,
-  SignUp
-} from "@clerk/clerk-react";
+import Landing from "./pages/Landing/Landing";
+import FileSelector from "./pages/FileSelector";
+import Dashboard from "./pages/dashboard/Dashboard";
+import ChooseUploadMethod from "./pages/ChooseUpload";
 
+import { SignedIn, SignIn, SignUp } from "@clerk/clerk-react";
+import RecentScans from "./pages/dashboard/RecentScans";
+import DragandDrop from "./pages/DragandDrop";
+import CameraCapture from "./pages/cameracapture";
+import AIProcessingScreen from "./pages/AIProcessingScreen";
+import Result from "./pages/ResultPage";
 
 function App() {
- 
+  const navigate = useNavigate();
 
   return (
-  <Routes>
-  <Route path="/" element={<Landing />} />
-  <Route path="/sign-in/*" element={<SignIn />} />
-  <Route path="/sign-up/*" element={<SignUp />} />
-  <Route path="/dashboard" element={<Dashboard />} />
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/sign-in/*" element={<SignIn redirectUrl="/dashboard" />} />
+      <Route path="/sign-up/*" element={<SignUp redirectUrl="/dashboard" />} />
+      <Route
+        path="/dashboard"
+        element={
+          <SignedIn>
+            <Dashboard />
+          </SignedIn>
+        }
+      />
+      <Route
+        path="/dashboard/scans"
+        element={
+          <SignedIn>
+            <RecentScans />
+          </SignedIn>
+        }
+      />
 
-</Routes>
-  )
+      <Route
+        path="/dashboard/fileselector"
+        element={
+          <SignedIn>
+            <FileSelector />
+          </SignedIn>
+        }
+      />
+      {/* <Route
+        path="/dashboard/dragdrop"
+        element={
+          <SignedIn>
+            <DragandDrop
+              onFiles={(files) => {
+                console.log("Dropped files:", files);
+              }}
+            />
+          </SignedIn>
+        }
+      /> */}
+      <Route
+        path="/dashboard/camera"
+        element={
+          <SignedIn>
+            <CameraCapture
+              onCapture={(files) => {
+                console.log("Captured:", files);
+              }}
+            />
+          </SignedIn>
+        }
+      />
+      <Route path="/results" element={<Result />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
