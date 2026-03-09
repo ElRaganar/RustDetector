@@ -1,43 +1,54 @@
 import { Image, AlertTriangle, Activity, Clock } from "lucide-react";
+import type { DashboardStats } from "./Dashboard";
 
-const stats = [
-  {
-    label: "Total Scans",
-    value: "128",
-    icon: <Image size={20} />,
-    color: "#e87c3e",
-  },
-  {
-    label: "Critical Rust",
-    value: "14",
-    icon: <AlertTriangle size={20} />,
-    color: "#D62828",
-  },
-  {
-    label: "Avg Severity",
-    value: "42%",
-    icon: <Activity size={20} />,
-    color: "#F77F00",
-  },
-  {
-    label: "Last Scan",
-    value: "3 min ago",
-    icon: <Clock size={20} />,
-    color: "#06A77D",
-  },
-];
+interface StatsPanelProps {
+  stats: DashboardStats;
+}
 
-const StatsPanel = () => {
+const StatsPanel = ({ stats }: StatsPanelProps) => {
+  
+  // Calculate a mock "Severity" percentage based on detections vs total scans
+  const avgSeverity = stats.totalScans > 0 
+    ? Math.min(100, Math.round((stats.totalDetections / stats.totalScans) * 20)) 
+    : 0;
+
+  // Build the display array dynamically
+  const displayStats = [
+    {
+      label: "Total Scans",
+      value: stats.totalScans.toString(),
+      icon: <Image size={20} />,
+      color: "#e87c3e",
+    },
+    {
+      label: "Critical Rust",
+      value: stats.criticalRust.toString(),
+      icon: <AlertTriangle size={20} />,
+      color: "#D62828", // Matches corrosion dark red
+    },
+    {
+      label: "Avg Severity",
+      value: `${avgSeverity}%`,
+      icon: <Activity size={20} />,
+      color: "#F77F00",
+    },
+    {
+      label: "Last Scan",
+      value: stats.totalScans > 0 ? "Just now" : "--",
+      icon: <Clock size={20} />,
+      color: "#06A77D",
+    },
+  ];
+
   return (
     <div
       className="rounded-2xl p-6 h-full"
       style={{
-        background:
-          "linear-gradient(145deg, rgba(232,124,62,0.05) 0%, #0d0b08 60%)",
+        background: "linear-gradient(145deg, rgba(232,124,62,0.05) 0%, #0d0b08 60%)",
         border: "1px solid rgba(232,124,62,0.12)",
       }}
     >
-      <p className="text-xs font-semibold tracking-widest uppercase mb-1 text-alert-orange">
+      <p className="text-xs font-semibold tracking-widest uppercase mb-1 text-[#e87c3e]">
         Dashboard
       </p>
       <h3
@@ -50,11 +61,11 @@ const StatsPanel = () => {
           color: "#fff",
         }}
       >
-        Overview
+        Session Overview
       </h3>
 
       <div className="grid grid-cols-2 gap-4">
-        {stats.map((stat) => (
+        {displayStats.map((stat) => (
           <div
             key={stat.label}
             className="flex items-center gap-3 p-4 rounded-xl transition"
@@ -62,12 +73,8 @@ const StatsPanel = () => {
               background: "rgba(232,124,62,0.03)",
               border: "1px solid rgba(232,124,62,0.08)",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.borderColor = "rgba(232,124,62,0.25)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.borderColor = "rgba(232,124,62,0.08)")
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(232,124,62,0.25)")}
+            onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(232,124,62,0.08)")}
           >
             {/* Icon */}
             <div
@@ -77,9 +84,9 @@ const StatsPanel = () => {
               {stat.icon}
             </div>
 
-            {/* Text */}
+            {/* Text details */}
             <div>
-              <p className="text-xs text-neutral-slate">{stat.label}</p>
+              <p className="text-xs text-gray-500">{stat.label}</p>
               <p
                 className="font-semibold"
                 style={{
