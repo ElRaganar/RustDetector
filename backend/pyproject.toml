@@ -9,5 +9,8 @@ dependencies = [
     "httpx>=0.28.1",
     "numpy>=2.4.1",
     "onnxruntime>=1.23.2",
+    "opencv-python>=4.13.0.92",
+    "pillow>=12.1.1",
+    "python-multipart>=0.0.22",
     "uvicorn[standard]>=0.40.0",
 ]

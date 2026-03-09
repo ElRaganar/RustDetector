@@ -1,54 +1,68 @@
-import ScanCard from "../Scancard";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Download, AlertTriangle, CheckCircle } from "lucide-react";
 import { useState } from "react";
+import type { InferenceResult } from "./Dashboard"; // Import your interface from Dashboard
 
-const scans = [
-  {
-    id: 1,
-    image: "/sample/rust1.jpg",
-    name: "pipeline_section_A.jpg",
-    date: "Jan 15, 2026",
-    status: "Completed",
-    severity: "High",
-  },
-  {
-    id: 2,
-    image: "/sample/rust2.jpg",
-    name: "storage_tank_02.png",
-    date: "Jan 14, 2026",
-    status: "Completed",
-    severity: "Medium",
-  },
-  {
-    id: 3,
-    image: "/sample/rust3.jpg",
-    name: "bridge_support.jpg",
-    date: "Jan 13, 2026",
-    status: "Failed",
-    severity: "—",
-  },
-];
+// We now accept the session results as a prop
+interface RecentScansProps {
+  results: InferenceResult[];
+}
 
-const RecentScans = () => {
+const RecentScans = ({ results = [] }: RecentScansProps) => {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All Status");
   const [sort, setSort] = useState("Newest First");
 
-  const filtered = scans.filter((s) => {
+  // 1. Format the raw session results into the shape our UI expects
+  const formattedScans = results.map((res, index) => {
+    const totalDetections =
+      res.detections.corrosion + res.detections.slippage + res.detections.crack;
+    
+    // Determine a dynamic severity
+    let severity = "Clean";
+    if (res.detections.corrosion > 0 || totalDetections >= 3) severity = "High";
+    else if (totalDetections > 0) severity = "Medium";
+
+    return {
+      id: index,
+      image: res.annotatedImage,
+      name: `Session_Scan_${index + 1}.jpg`,
+      date: new Date().toLocaleDateString(), // Today's date for the current session
+      status: "Completed",
+      severity: severity,
+      raw: res,
+    };
+  });
+
+  // 2. Apply Filters
+  let filtered = formattedScans.filter((s) => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase());
     const matchStatus = status === "All Status" || s.status === status;
     return matchSearch && matchStatus;
   });
 
+  // 3. Apply Sorting
+  if (sort === "Newest First") {
+    filtered = filtered.reverse();
+  }
+
+  // 4. Download Handler for Base64 strings
+  const handleDownload = (base64Image: string, filename: string) => {
+    const link = document.createElement("a");
+    link.href = base64Image;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="p-8 min-h-screen" style={{ background: "#0a0806" }}>
       {/* Header */}
       <div className="mb-8">
-        <p className="text-xs font-semibold tracking-widest uppercase mb-1 text-alert-orange">
+        <p className="text-xs font-semibold tracking-widest uppercase mb-1 text-[#e87c3e]">
           Analysis History
         </p>
         <h1
-          className="text-deep-charcoal"
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
             fontSize: "2.6rem",
@@ -59,8 +73,8 @@ const RecentScans = () => {
         >
           Recent Scans
         </h1>
-        <p className="text-sm mt-1 text-neutral-slate">
-          View and manage your previous rust analyses
+        <p className="text-sm mt-1 text-gray-400">
+          View and download your rust analyses from this session
         </p>
       </div>
 
@@ -95,7 +109,6 @@ const RecentScans = () => {
             background: "rgba(232,124,62,0.06)",
             border: "1px solid rgba(232,124,62,0.15)",
             color: "#c4a97a",
-            fontFamily: "'DM Sans', sans-serif",
           }}
         >
           <option>All Status</option>
@@ -112,7 +125,6 @@ const RecentScans = () => {
             background: "rgba(232,124,62,0.06)",
             border: "1px solid rgba(232,124,62,0.15)",
             color: "#c4a97a",
-            fontFamily: "'DM Sans', sans-serif",
           }}
         >
           <option>Newest First</option>
@@ -122,9 +134,73 @@ const RecentScans = () => {
 
       {/* Grid */}
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filtered.map((scan) => (
-            <ScanCard key={scan.id} scan={scan} />
+            <div
+              key={scan.id}
+              className="flex flex-col rounded-2xl overflow-hidden border transition-all"
+              style={{
+                background: "rgba(232,124,62,0.03)",
+                borderColor: "rgba(232,124,62,0.1)",
+              }}
+            >
+              {/* Image Container */}
+              <div className="relative h-48 w-full bg-black">
+                <img
+                  src={scan.image}
+                  alt={scan.name}
+                  className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+                />
+                <div className="absolute top-3 right-3 flex gap-2">
+                  <span
+                    className={`px-2 py-1 text-xs font-bold rounded-md ${
+                      scan.severity === "High"
+                        ? "bg-red-500/80 text-white"
+                        : scan.severity === "Medium"
+                        ? "bg-orange-500/80 text-white"
+                        : "bg-green-500/80 text-white"
+                    }`}
+                  >
+                    {scan.severity} Risk
+                  </span>
+                </div>
+              </div>
+
+              {/* Card Body */}
+              <div className="p-4 flex flex-col gap-3">
+                <div>
+                  <h3 className="text-gray-200 font-medium text-sm truncate" title={scan.name}>
+                    {scan.name}
+                  </h3>
+                  <p className="text-gray-500 text-xs mt-0.5">{scan.date}</p>
+                </div>
+
+                <div className="flex items-center justify-between mt-1">
+                  <div className="flex items-center gap-1.5 text-xs">
+                    {scan.status === "Completed" ? (
+                      <CheckCircle size={14} className="text-green-500" />
+                    ) : (
+                      <AlertTriangle size={14} className="text-red-500" />
+                    )}
+                    <span className="text-gray-400">{scan.status}</span>
+                  </div>
+
+                  {/* Download Button */}
+                  <button
+                    onClick={() => handleDownload(scan.image, scan.name)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                    style={{
+                      background: "#e87c3e",
+                      color: "#fff",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                  >
+                    <Download size={14} /> Download
+                  </button>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       ) : (
@@ -158,8 +234,8 @@ const EmptyState = () => (
     >
       No Scans Found
     </p>
-    <p className="text-sm text-neutral-slate">
-      You have not performed any scans yet.
+    <p className="text-sm text-gray-500">
+      You have not performed any scans during this session yet.
     </p>
   </div>
 );
