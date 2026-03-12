@@ -3,6 +3,7 @@ import { CloudUpload, Folder, Camera, X, CheckCircle, Loader2 } from "lucide-rea
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import type{ InferenceResult, DashboardStats } from "./Dashboard"; // Make sure these are exported from Dashboard.tsx
+import { API_BASE_URL } from "../../lib/api";
 
 interface QueueFile {
   id: string;
@@ -56,12 +57,17 @@ const UploadCard = ({ setResults, isProcessing, setIsProcessing, setStats }: Upl
       });
 
       // 2. Send the batch to your FastAPI backend
-      const response = await fetch("http://localhost:8000/api/predict", {
+      const response = await fetch(`${API_BASE_URL}/api/predict`, {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Server error during inference");
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "");
+        throw new Error(
+          `Backend error (${response.status} ${response.statusText})${errorText ? `: ${errorText}` : ""}`,
+        );
+      }
 
       const data = await response.json();
       
@@ -94,7 +100,8 @@ const UploadCard = ({ setResults, isProcessing, setIsProcessing, setStats }: Upl
       
     } catch (error) {
       console.error("Analysis failed:", error);
-      alert("Failed to connect to the backend. Is your FastAPI server running on port 8000?");
+      const message = error instanceof Error ? error.message : String(error);
+      alert(`Failed to analyze. Backend: ${API_BASE_URL}\n${message}`);
     } finally {
       setIsProcessing(false);
     }

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { SignedOut, SignedIn, UserButton } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from "../../lib/api";
 import * as THREE from "three";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { gsap } from "gsap";
@@ -268,7 +269,7 @@ const Landing = () => {
 
       try {
      
-        await fetch("http://localhost:8000/api/track", {
+        await fetch(`${API_BASE_URL}/api/track`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

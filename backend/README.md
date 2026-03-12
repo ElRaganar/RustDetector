@@ -7,3 +7,17 @@ cd here to this rustdetector/backend then -- do this in terminal
 # uv sync
 
 that all then its going to manage all the dependecy that we have here
+
+## Run (dev)
+
+From `backend/`:
+
+```bash
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+If `uv` fails to initialize its cache (permissions), set a writable cache dir:
+
+```bash
+UV_CACHE_DIR=/tmp/uv-cache uv run uvicorn src.main:app --host 127.0.0.1 --port 8000 --reload
+```

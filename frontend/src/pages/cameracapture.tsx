@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Camera, AlertTriangle, SwitchCamera, Loader2, X, UploadCloud } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { InferenceResult, DashboardStats } from "./dashboard/Dashboard"; // Adjust path if needed
+import { API_BASE_URL } from "../lib/api";
 
 interface CameraCaptureProps {
   setResults: React.Dispatch<React.SetStateAction<InferenceResult[]>>;
@@ -105,12 +106,17 @@ const CameraCapture = ({ setResults, setStats }: CameraCaptureProps) => {
       const formData = new FormData();
       formData.append("files", capturedFile);
 
-      const response = await fetch("http://localhost:8000/api/predict", {
+      const response = await fetch(`${API_BASE_URL}/api/predict`, {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Server error during inference");
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "");
+        throw new Error(
+          `Backend error (${response.status} ${response.statusText})${errorText ? `: ${errorText}` : ""}`,
+        );
+      }
 
       const data = await response.json();
       
@@ -141,7 +147,8 @@ const CameraCapture = ({ setResults, setStats }: CameraCaptureProps) => {
       
     } catch (error) {
       console.error("Analysis failed:", error);
-      alert("Failed to connect to the backend.");
+      const message = error instanceof Error ? error.message : String(error);
+      alert(`Failed to analyze. Backend: ${API_BASE_URL}\n${message}`);
       setIsProcessing(false);
     }
   };

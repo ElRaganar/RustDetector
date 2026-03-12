@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from typing import List
 from datetime import datetime
+from pathlib import Path
 import httpx
 import uvicorn
 import cv2
@@ -38,8 +39,12 @@ ml_models = {}
 async def lifespan(app: FastAPI):
     print("Loading YOLO11 model into RAM...")
     try:
+        # Resolve model path relative to the backend directory (cross-platform).
+        backend_dir = Path(__file__).resolve().parent.parent
+        model_path = backend_dir / "model" / "best.onnx"
+
         # Load the model once here
-        session = ort.InferenceSession("model\\best.onnx", providers=['CPUExecutionProvider'])
+        session = ort.InferenceSession(str(model_path), providers=["CPUExecutionProvider"])
         
         # Get input name dynamically
         model_inputs = session.get_inputs()
@@ -251,4 +256,6 @@ def read_root():
 # 6. RUN THE SERVER
 # ==========================================
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    # Run from the `backend/` directory:
+    # `uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload`
+    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)
