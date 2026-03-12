@@ -266,8 +266,4 @@ model/best.onnx
 
 <hr>
 
-<<<<<<< HEAD
 </div>
-=======
-</div>
->>>>>>> 88975d9d177efb42dc1a18b273e55601b2205972
