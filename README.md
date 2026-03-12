@@ -1,84 +1,269 @@
-# RustDetector Frontend: Pages and Routing
+<div style="font-family: Arial, sans-serif; line-height:1.6;">
 
-This document details the frontend page structure and routing within the RustDetector application. The application utilizes React Router DOM for navigation, providing a seamless user experience across different functionalities.
+<h1 style="text-align:center;">RustDetector Frontend: Pages and Routing</h1>
 
-## Core Routing (`src/App.tsx`)
+<p>
+This document details the frontend page structure and routing within the RustDetector application.
+The application utilizes <b>React Router DOM</b> for navigation, providing a seamless user experience across different functionalities.
+</p>
 
-The `App.tsx` file serves as the central hub for defining the application's routes. It uses `react-router-dom` to manage navigation between various pages and authenticated states. The primary routes are:
+<hr>
 
-| Path                 | Component(s)                                   | Authentication Required |
-| :------------------- | :--------------------------------------------- | :---------------------- |
-| `/`                  | `Landing`                                      | No                      |
-| `/sign-in/*`         | `SignIn` (redirects to `/dashboard`)           | No                      |
-| `/sign-up/*`         | `SignUp` (redirects to `/dashboard`)           | No                      |
-| `/dashboard`         | `Dashboard`                                    | Yes                     |
-| `/dashboard/scans`   | `RecentScans` (nested within `Dashboard`)      | Yes                     |
-| `/dashboard/fileselector` | `FileSelector` (nested within `Dashboard`) | Yes                     |
-| `/dashboard/dragdrop` | `DragandDrop` (nested within `Dashboard`)    | Yes                     |
-| `/dashboard/camera`  | `CameraCapture` (nested within `Dashboard`)    | Yes                     |
-| `/dashboard/results` | `Result` (nested within `Dashboard`)           | Yes                     |
+<h2>Core Routing (<code>src/App.tsx</code>)</h2>
 
-## Page Components (`src/pages/`)
+<p>
+The <code>App.tsx</code> file serves as the central hub for defining the application's routes. It manages navigation between various pages and authenticated states.
+</p>
 
-The `src/pages` directory contains the main components that represent different views or functionalities of the application. These are organized to reflect distinct user interactions.
+<table style="border-collapse: collapse; width:100%;">
+<tr style="background:#f5f5f5;">
+<th style="border:1px solid #ddd;padding:8px;">Path</th>
+<th style="border:1px solid #ddd;padding:8px;">Component(s)</th>
+<th style="border:1px solid #ddd;padding:8px;">Authentication Required</th>
+</tr>
 
-### Top-Level Pages
+<tr>
+<td style="border:1px solid #ddd;padding:8px;">/</td>
+<td style="border:1px solid #ddd;padding:8px;">Landing</td>
+<td style="border:1px solid #ddd;padding:8px;">No</td>
+</tr>
 
-*   **`Landing.tsx`**: The initial entry point for unauthenticated users, likely showcasing the application's purpose and features.
-*   **`AIProcessingScreen.tsx`**: Displays a loading or progress indicator while the AI backend processes uploaded images.
-*   **`ResultPage.tsx`**: Renders the detailed results of the rust detection, including visualizations and recommended actions.
+<tr>
+<td style="border:1px solid #ddd;padding:8px;">/sign-in/*</td>
+<td style="border:1px solid #ddd;padding:8px;">SignIn (redirects to /dashboard)</td>
+<td style="border:1px solid #ddd;padding:8px;">No</td>
+</tr>
 
-### Dashboard Sub-Pages (`src/pages/dashboard/`)
+<tr>
+<td style="border:1px solid #ddd;padding:8px;">/sign-up/*</td>
+<td style="border:1px solid #ddd;padding:8px;">SignUp (redirects to /dashboard)</td>
+<td style="border:1px solid #ddd;padding:8px;">No</td>
+</tr>
 
-These components are typically rendered within the authenticated dashboard layout:
+<tr>
+<td style="border:1px solid #ddd;padding:8px;">/dashboard</td>
+<td style="border:1px solid #ddd;padding:8px;">Dashboard</td>
+<td style="border:1px solid #ddd;padding:8px;">Yes</td>
+</tr>
 
-*   **`Dashboard.tsx`**: The main dashboard view, acting as a container for other dashboard-related components.
-*   **`RecentScans.tsx`**: Displays a list of the user's past rust detection scans.
-*   **`StatsPanel.tsx`**: Likely shows statistical data related to rust detection or user activity.
-*   **`UploadCard.tsx`**: Provides an interface for users to upload images.
+<tr>
+<td style="border:1px solid #ddd;padding:8px;">/dashboard/scans</td>
+<td style="border:1px solid #ddd;padding:8px;">RecentScans</td>
+<td style="border:1px solid #ddd;padding:8px;">Yes</td>
+</tr>
 
-### Image Upload/Capture Related Pages
+<tr>
+<td style="border:1px solid #ddd;padding:8px;">/dashboard/fileselector</td>
+<td style="border:1px solid #ddd;padding:8px;">FileSelector</td>
+<td style="border:1px solid #ddd;padding:8px;">Yes</td>
+</tr>
 
-These pages facilitate the process of getting images into the system for AI analysis:
+<tr>
+<td style="border:1px solid #ddd;padding:8px;">/dashboard/dragdrop</td>
+<td style="border:1px solid #ddd;padding:8px;">DragandDrop</td>
+<td style="border:1px solid #ddd;padding:8px;">Yes</td>
+</tr>
 
-*   **`ChooseUpload.tsx`**: Allows users to select their preferred method of image upload (e.g., file selection, drag-and-drop, camera).
-*   **`FileSelector.tsx`**: Enables users to browse and select image files from their local system.
-*   **`DragandDrop.tsx`**: Provides a drag-and-drop interface for image uploads.
-*   **`CameraPermission.tsx`**: Handles requesting and managing camera access permissions.
-*   **`CameraCapture.tsx`**: Allows users to capture images directly using their device's camera.
-*   **`CameraReview.tsx`**: Displays a preview of the captured image before submission.
-*   **`ImageValidation.tsx`**: Likely handles client-side validation of image files.
-*   **`ImagepreviewPanel.tsx`**: A component for displaying image previews.
-*   **`ProgressScreen.tsx`**: A generic screen to show progress during operations.
+<tr>
+<td style="border:1px solid #ddd;padding:8px;">/dashboard/camera</td>
+<td style="border:1px solid #ddd;padding:8px;">CameraCapture</td>
+<td style="border:1px solid #ddd;padding:8px;">Yes</td>
+</tr>
 
-### Other Components
+<tr>
+<td style="border:1px solid #ddd;padding:8px;">/dashboard/results</td>
+<td style="border:1px solid #ddd;padding:8px;">Result</td>
+<td style="border:1px solid #ddd;padding:8px;">Yes</td>
+</tr>
 
-*   **`Header.tsx`**: A common header component used across multiple pages.
-*   **`FileCard.tsx`**: A reusable component for displaying individual file information.
-*   **`DropZone.tsx`**: A component for handling drag-and-drop functionality.
-*   **`DropZoneContent.tsx`**: Content displayed within the drop zone.
-*   **`Scancard.tsx`**: A component likely used to display individual scan results.
-*   **`SummaryBar.tsx`**: A bar displaying summary information.
-*   **`browsefile.tsx`**: A component related to file browsing.
-*   **`cameracard.tsx`**: A component related to camera functionality.
+</table>
 
-## Authentication Flow
+<hr>
 
-The application uses Clerk for authentication. Users are directed to `SignIn` or `SignUp` pages, and upon successful authentication, they are redirected to the `/dashboard` route. Access to dashboard-related routes (`/dashboard/*`) requires a signed-in user.
+<h2>Page Components (<code>src/pages/</code>)</h2>
 
-## Navigation Example
+<p>
+The <code>src/pages</code> directory contains the main components representing different views and user interactions.
+</p>
 
-1.  **Initial Access**: User navigates to `/` and sees the `Landing` page.
-2.  **Authentication**: User clicks 
-on "Sign In" and is taken to `/sign-in`. After successful login, they are redirected to `/dashboard`.
-3.  **Dashboard Interaction**: From the dashboard, the user might click on "Upload Image", leading them to `/dashboard/fileselector` or `/dashboard/dragdrop` depending on the chosen method.
-4.  **Processing and Results**: After uploading, the user might see the `AIProcessingScreen` and then be directed to `/dashboard/results` to view the `ResultPage`.
+<h3>Top-Level Pages</h3>
 
-## Development
+<ul>
+<li><b>Landing.tsx</b> – Entry point for unauthenticated users.</li>
+<li><b>AIProcessingScreen.tsx</b> – Displays a loading screen while the AI processes uploaded images.</li>
+<li><b>ResultPage.tsx</b> – Displays detailed rust detection results.</li>
+</ul>
 
-When developing new features or pages, ensure that new routes are properly defined in `App.tsx` and that appropriate authentication checks are in place where necessary. Page components should be placed in the `src/pages` directory, with sub-directories for related functionalities (e.g., `src/pages/dashboard`).
+<h3>Dashboard Sub-Pages (<code>src/pages/dashboard/</code>)</h3>
 
-## Conclusion
+<ul>
+<li><b>Dashboard.tsx</b> – Main dashboard container.</li>
+<li><b>RecentScans.tsx</b> – Displays user's past rust detection scans.</li>
+<li><b>StatsPanel.tsx</b> – Shows statistical data related to scans.</li>
+<li><b>UploadCard.tsx</b> – Interface for uploading images.</li>
+</ul>
 
-This routing structure provides a clear and organized way to manage the application's navigation, ensuring a smooth and intuitive experience for the user. The modular design of the page components allows for easy maintenance and scalability.
+<h3>Image Upload / Capture Pages</h3>
 
+<ul>
+<li>ChooseUpload.tsx</li>
+<li>FileSelector.tsx</li>
+<li>DragandDrop.tsx</li>
+<li>CameraPermission.tsx</li>
+<li>CameraCapture.tsx</li>
+<li>CameraReview.tsx</li>
+<li>ImageValidation.tsx</li>
+<li>ImagepreviewPanel.tsx</li>
+<li>ProgressScreen.tsx</li>
+</ul>
+
+<h3>Other Components</h3>
+
+<ul>
+<li>Header.tsx</li>
+<li>FileCard.tsx</li>
+<li>DropZone.tsx</li>
+<li>DropZoneContent.tsx</li>
+<li>Scancard.tsx</li>
+<li>SummaryBar.tsx</li>
+<li>browsefile.tsx</li>
+<li>cameracard.tsx</li>
+</ul>
+
+<hr>
+
+<h2>Authentication Flow</h2>
+
+<p>
+The application uses <b>Clerk</b> for authentication.
+</p>
+
+<ul>
+<li>Users sign in through <code>/sign-in</code></li>
+<li>Users sign up through <code>/sign-up</code></li>
+<li>After successful authentication, they are redirected to <code>/dashboard</code></li>
+<li>All <code>/dashboard/*</code> routes require authentication</li>
+</ul>
+
+<hr>
+
+<h2>Navigation Example</h2>
+
+<ol>
+<li>User visits <b>Landing Page</b></li>
+<li>User clicks <b>Sign In</b> and logs in</li>
+<li>User is redirected to <b>Dashboard</b></li>
+<li>User uploads an image via file selector, drag & drop, or camera</li>
+<li>The AI processes the image</li>
+<li>Results appear on the <b>Results Page</b></li>
+</ol>
+
+<hr>
+
+<h2>Development</h2>
+
+<ul>
+<li>Add new routes inside <code>App.tsx</code></li>
+<li>Protect dashboard routes with authentication</li>
+<li>Place page components inside <code>src/pages</code></li>
+<li>Use subfolders for related features</li>
+</ul>
+
+<hr>
+
+<h2>Conclusion</h2>
+
+<p>
+This routing structure provides a clear and organized way to manage application navigation.
+The modular design of components ensures scalability and maintainability.
+</p>
+
+<hr>
+
+<h2>Running Locally</h2>
+
+<h3>Prerequisites</h3>
+
+<ul>
+<li>Node.js + npm</li>
+<li>Python 3.11+</li>
+<li>uv (Python package manager)</li>
+</ul>
+
+<hr>
+
+<h3>Frontend Setup (Vite)</h3>
+
+<p>From the repository root:</p>
+
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+npm install
+</pre>
+
+<p>Create a <code>.env</code> file:</p>
+
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_yourkey
+</pre>
+
+<p>Start development server:</p>
+
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+npm run dev
+</pre>
+
+<p>Open in browser:</p>
+
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+http://localhost:5173/
+</pre>
+
+<p><b>Note:</b> Run the command from the repository root so Vite loads the environment variables.</p>
+
+<hr>
+
+<h3>Backend Setup (FastAPI)</h3>
+
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+cd backend
+uv sync
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+</pre>
+
+<p>Backend runs at:</p>
+
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+http://localhost:8000
+</pre>
+
+<hr>
+
+<h3>Common Issues</h3>
+
+<h4>Clerk Authentication Error</h4>
+
+<ul>
+<li>Ensure <code>.env</code> exists in repository root</li>
+<li>Add full Clerk publishable key</li>
+<li>Restart frontend server</li>
+</ul>
+
+<h4>ONNX Model Path Issue</h4>
+
+<p>Windows path:</p>
+
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+model\\best.onnx
+</pre>
+
+<p>Replace with:</p>
+
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+model/best.onnx
+</pre>
+
+<p>Or use Python <code>pathlib</code> for cross-platform compatibility.</p>
+
+<hr>
+
+</div>
