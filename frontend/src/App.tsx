@@ -5,7 +5,10 @@ import "./index.css";
 import Landing from "./pages/Landing/Landing";
 import FileSelector from "./pages/FileSelector";
 import Dashboard from "./pages/dashboard/Dashboard";
-import type { InferenceResult, DashboardStats } from "./pages/dashboard/Dashboard";
+import type {
+  InferenceResult,
+  DashboardStats,
+} from "./pages/dashboard/Dashboard";
 import ChooseUploadMethod from "./pages/ChooseUpload";
 
 import { SignedIn, SignIn, SignUp } from "@clerk/clerk-react";
@@ -14,6 +17,8 @@ import DragandDrop from "./pages/DragandDrop";
 import CameraCapture from "./pages/cameracapture";
 import AIProcessingScreen from "./pages/AIProcessingScreen";
 import Result from "./pages/ResultPage";
+import SignInPage from "./pages/clerk_ui/Signin_clerk.tsx";
+import SignUpPage from "./pages/clerk_ui/Signup_clerk.tsx";
 
 function App() {
   const navigate = useNavigate();
@@ -29,26 +34,26 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/sign-in" element={<SignInPage />} />
+      <Route path="/sign-up" element={<SignUpPage />} />
       {/* Public Routes */}
       <Route path="/" element={<Landing />} />
-      <Route path="/sign-in/*" element={<SignIn redirectUrl="/dashboard" />} />
-      <Route path="/sign-up/*" element={<SignUp redirectUrl="/dashboard" />} />
-      
+
       {/* Dashboard Route - Passing both results and stats to display and update */}
       <Route
         path="/dashboard"
         element={
           <SignedIn>
-            <Dashboard 
-              results={results} 
-              setResults={setResults} 
-              stats={stats} 
-              setStats={setStats} 
+            <Dashboard
+              results={results}
+              setResults={setResults}
+              stats={stats}
+              setStats={setStats}
             />
           </SignedIn>
         }
       />
-      
+
       {/* Recent Scans Route - Passing results to view history */}
       <Route
         path="/dashboard/scans"
@@ -68,20 +73,17 @@ function App() {
           </SignedIn>
         }
       />
-      
+
       {/* Camera Route - Passing setters so it can save the captured scan */}
       <Route
         path="/dashboard/camera"
         element={
           <SignedIn>
-            <CameraCapture
-              setResults={setResults}
-              setStats={setStats}
-            />
+            <CameraCapture setResults={setResults} setStats={setStats} />
           </SignedIn>
         }
       />
-      
+
       <Route path="/results" element={<Result />} />
     </Routes>
   );

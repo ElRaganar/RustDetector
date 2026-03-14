@@ -252,9 +252,8 @@ const Landing = () => {
     }, containerRef);
     return () => ctx.revert();
   }, []);
-// here is  the code for the sending the tracking data to the backend part of the server
+  // here is  the code for the sending the tracking data to the backend part of the server
   useEffect(() => {
-    
     const sendTrackingData = async () => {
       const trackingData = {
         url: window.location.href,
@@ -268,7 +267,6 @@ const Landing = () => {
       };
 
       try {
-     
         await fetch(`${API_BASE_URL}/api/track`, {
           method: "POST",
           headers: {
@@ -277,7 +275,6 @@ const Landing = () => {
           body: JSON.stringify(trackingData),
         });
       } catch (error) {
-      
         console.error("Failed to send tracking data:", error);
       }
     };
@@ -638,8 +635,6 @@ const Landing = () => {
           {[
             { value: "99.2%", label: "Detection Accuracy" },
             { value: "<3s", label: "Analysis Time" },
-            { value: "50K+", label: "Images Analyzed" },
-            { value: "4.8★", label: "Customer Rating" },
           ].map((s, i) => (
             <div
               key={i}

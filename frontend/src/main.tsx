@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ClerkProvider } from "@clerk/clerk-react";
+import { dark, neobrutalism } from "@clerk/themes";
 
 const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -22,7 +23,11 @@ const MissingClerkKey = () => (
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {clerkKey ? (
-      <ClerkProvider publishableKey={clerkKey}>
+      <ClerkProvider
+        publishableKey={clerkKey}
+        signInUrl="/sign-in"
+        signUpUrl="/sign-up"
+      >
         <Router>
           <App />
         </Router>
