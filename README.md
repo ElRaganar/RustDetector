@@ -1,296 +1,158 @@
 <div style="font-family: Arial, sans-serif; line-height:1.6;">
 
-<h1 style="text-align:center;">RustDetector Frontend: Pages and Routing</h1>
-
-<p>
-This document details the frontend page structure and routing within the RustDetector application.
-The application utilizes <b>React Router DOM</b> for navigation, providing a seamless user experience across different functionalities.
+<h1 style="text-align:center; margin-bottom: 0.25rem;">RustDetector</h1>
+<p style="text-align:center; color:#555; margin-top:0;">
+Full-stack rust/corrosion detection from images — React + Vite frontend, FastAPI + ONNX backend.
 </p>
 
 <hr>
 
-<h2>Core Routing (<code>src/App.tsx</code>)</h2>
-
+<h2>Overview</h2>
 <p>
-The <code>App.tsx</code> file serves as the central hub for defining the application's routes. It manages navigation between various pages and authenticated states.
-</p>
-
-<table style="border-collapse: collapse; width:100%;">
-<tr style="background:#f5f5f5;">
-<th style="border:1px solid #ddd;padding:8px;">Path</th>
-<th style="border:1px solid #ddd;padding:8px;">Component(s)</th>
-<th style="border:1px solid #ddd;padding:8px;">Authentication Required</th>
-</tr>
-
-<tr>
-<td style="border:1px solid #ddd;padding:8px;">/</td>
-<td style="border:1px solid #ddd;padding:8px;">Landing</td>
-<td style="border:1px solid #ddd;padding:8px;">No</td>
-</tr>
-
-<tr>
-<td style="border:1px solid #ddd;padding:8px;">/sign-in/*</td>
-<td style="border:1px solid #ddd;padding:8px;">SignIn (redirects to /dashboard)</td>
-<td style="border:1px solid #ddd;padding:8px;">No</td>
-</tr>
-
-<tr>
-<td style="border:1px solid #ddd;padding:8px;">/sign-up/*</td>
-<td style="border:1px solid #ddd;padding:8px;">SignUp (redirects to /dashboard)</td>
-<td style="border:1px solid #ddd;padding:8px;">No</td>
-</tr>
-
-<tr>
-<td style="border:1px solid #ddd;padding:8px;">/dashboard</td>
-<td style="border:1px solid #ddd;padding:8px;">Dashboard</td>
-<td style="border:1px solid #ddd;padding:8px;">Yes</td>
-</tr>
-
-<tr>
-<td style="border:1px solid #ddd;padding:8px;">/dashboard/scans</td>
-<td style="border:1px solid #ddd;padding:8px;">RecentScans</td>
-<td style="border:1px solid #ddd;padding:8px;">Yes</td>
-</tr>
-
-<tr>
-<td style="border:1px solid #ddd;padding:8px;">/dashboard/fileselector</td>
-<td style="border:1px solid #ddd;padding:8px;">FileSelector</td>
-<td style="border:1px solid #ddd;padding:8px;">Yes</td>
-</tr>
-
-<tr>
-<td style="border:1px solid #ddd;padding:8px;">/dashboard/dragdrop</td>
-<td style="border:1px solid #ddd;padding:8px;">DragandDrop</td>
-<td style="border:1px solid #ddd;padding:8px;">Yes</td>
-</tr>
-
-<tr>
-<td style="border:1px solid #ddd;padding:8px;">/dashboard/camera</td>
-<td style="border:1px solid #ddd;padding:8px;">CameraCapture</td>
-<td style="border:1px solid #ddd;padding:8px;">Yes</td>
-</tr>
-
-<tr>
-<td style="border:1px solid #ddd;padding:8px;">/dashboard/results</td>
-<td style="border:1px solid #ddd;padding:8px;">Result</td>
-<td style="border:1px solid #ddd;padding:8px;">Yes</td>
-</tr>
-
-</table>
-
-<hr>
-
-<h2>Page Components (<code>src/pages/</code>)</h2>
-
-<p>
-The <code>src/pages</code> directory contains the main components representing different views and user interactions.
-</p>
-
-<h3>Top-Level Pages</h3>
-
-<ul>
-<li><b>Landing.tsx</b> – Entry point for unauthenticated users.</li>
-<li><b>AIProcessingScreen.tsx</b> – Displays a loading screen while the AI processes uploaded images.</li>
-<li><b>ResultPage.tsx</b> – Displays detailed rust detection results.</li>
-</ul>
-
-<h3>Dashboard Sub-Pages (<code>src/pages/dashboard/</code>)</h3>
-
-<ul>
-<li><b>Dashboard.tsx</b> – Main dashboard container.</li>
-<li><b>RecentScans.tsx</b> – Displays user's past rust detection scans.</li>
-<li><b>StatsPanel.tsx</b> – Shows statistical data related to scans.</li>
-<li><b>UploadCard.tsx</b> – Interface for uploading images.</li>
-</ul>
-
-<h3>Image Upload / Capture Pages</h3>
-
-<ul>
-<li>ChooseUpload.tsx</li>
-<li>FileSelector.tsx</li>
-<li>DragandDrop.tsx</li>
-<li>CameraPermission.tsx</li>
-<li>CameraCapture.tsx</li>
-<li>CameraReview.tsx</li>
-<li>ImageValidation.tsx</li>
-<li>ImagepreviewPanel.tsx</li>
-<li>ProgressScreen.tsx</li>
-</ul>
-
-<h3>Other Components</h3>
-
-<ul>
-<li>Header.tsx</li>
-<li>FileCard.tsx</li>
-<li>DropZone.tsx</li>
-<li>DropZoneContent.tsx</li>
-<li>Scancard.tsx</li>
-<li>SummaryBar.tsx</li>
-<li>browsefile.tsx</li>
-<li>cameracard.tsx</li>
-</ul>
-
-<hr>
-
-<h2>Authentication Flow</h2>
-
-<p>
-The application uses <b>Clerk</b> for authentication.
-</p>
-
-<ul>
-<li>Users sign in through <code>/sign-in</code></li>
-<li>Users sign up through <code>/sign-up</code></li>
-<li>After successful authentication, they are redirected to <code>/dashboard</code></li>
-<li>All <code>/dashboard/*</code> routes require authentication</li>
-</ul>
-
-<hr>
-
-<h2>Navigation Example</h2>
-
-<ol>
-<li>User visits <b>Landing Page</b></li>
-<li>User clicks <b>Sign In</b> and logs in</li>
-<li>User is redirected to <b>Dashboard</b></li>
-<li>User uploads an image via file selector, drag & drop, or camera</li>
-<li>The AI processes the image</li>
-<li>Results appear on the <b>Results Page</b></li>
-</ol>
-
-<hr>
-
-<h2>Development</h2>
-
-<ul>
-<li>Add new routes inside <code>App.tsx</code></li>
-<li>Protect dashboard routes with authentication</li>
-<li>Place page components inside <code>src/pages</code></li>
-<li>Use subfolders for related features</li>
-</ul>
-
-<hr>
-
-<h2>Conclusion</h2>
-
-<p>
-This routing structure provides a clear and organized way to manage application navigation.
-The modular design of components ensures scalability and maintainability.
+RustDetector is a full-stack web app for detecting rust/corrosion-related defects from images.
+The frontend is built with <b>React + Vite + React Router</b>, and the backend is a <b>FastAPI</b> service that runs a
+<b>YOLO ONNX</b> model via <b>ONNX Runtime</b>.
 </p>
 
 <hr>
 
-<h2>Running with Docker</h2>
-
-<p>
-The RustDetector application can be run using <b>Docker</b>. Docker packages the frontend,
-backend, and their dependencies into containers so the application runs the same on any system.
-</p>
-
-<hr>
-
-<h3>Prerequisites</h3>
-
+<h2>Repo layout</h2>
 <ul>
-<li>Install <b>Docker</b></li>
-<li>Install <b>Docker Compose</b> (usually included with Docker Desktop)</li>
-<li>Git (to clone the repository)</li>
+  <li><code>frontend/</code>: React UI (auth via Clerk)</li>
+  <li><code>backend/</code>: FastAPI API + model loader (<code>backend/model/best.onnx</code>)</li>
+  <li><code>docker-compose.yml</code>: runs frontend on <code>5173</code> and backend on <code>8000</code></li>
 </ul>
 
 <hr>
 
-<h3>Environment Variables</h3>
+<h2>Quickstart (Docker)</h2>
 
-<p>
-Before running the containers, create a <code>.env</code> file in the repository root.
-This file stores environment variables required by the application.
-</p>
-
-<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+<h3>1) Set frontend env vars</h3>
+<p>Create <code>frontend/.env</code>:</p>
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;overflow:auto;">
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_clerk_publishable_key
+# Optional (defaults to http://localhost:8000):
+# VITE_API_BASE_URL=http://localhost:8000
 </pre>
 
-<p>
-This key is required for <b>Clerk Authentication</b> to function correctly in the frontend.
-</p>
-
-<hr>
-
-<h3>Build and Start Containers</h3>
-
-<p>
-From the repository root directory, run:
-</p>
-
-<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+<h3>2) Build + run</h3>
+<p>From the repo root:</p>
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;overflow:auto;">
 docker compose up --build
 </pre>
 
-<p>
-This command will:
-</p>
-
+<h3>3) Open the app</h3>
 <ul>
-<li>Build the Docker images for the frontend and backend</li>
-<li>Install all dependencies inside the containers</li>
-<li>Start both services</li>
+  <li>Frontend: <code>http://localhost:5173</code></li>
+  <li>Backend: <code>http://localhost:8000</code></li>
 </ul>
 
-<hr>
-
-<h3>Access the Application</h3>
-
-<p>
-After the containers start successfully, open the frontend in your browser:
-</p>
-
-<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-http://localhost:5173
-</pre>
-
-<p>
-Backend API will be available at:
-</p>
-
-<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-http://localhost:8000
-</pre>
-
-<hr>
-
-<h3>Stopping the Containers</h3>
-
-<p>
-To stop the running containers, press:
-</p>
-
-<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-CTRL + C
-</pre>
-
-<p>
-Or run:
-</p>
-
-<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+<p>Stop containers with <code>Ctrl+C</code>, then:</p>
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;overflow:auto;">
 docker compose down
 </pre>
 
 <hr>
 
-<h3>Rebuilding After Code Changes</h3>
+<h2>Local development (no Docker)</h2>
 
-<p>
-If you make changes to the Docker configuration or dependencies, rebuild the containers:
-</p>
-
-<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-docker compose up --build
+<h3>Backend (FastAPI)</h3>
+<p>From <code>backend/</code>:</p>
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;overflow:auto;">
+uv sync
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 </pre>
 
-<p>
-This ensures the updated code and dependencies are included in the container.
-</p>
+<p>If <code>uv</code> has cache permission issues:</p>
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;overflow:auto;">
+UV_CACHE_DIR=/tmp/uv-cache uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+</pre>
+
+<h3>Frontend (Vite)</h3>
+<p>From <code>frontend/</code>:</p>
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;overflow:auto;">
+npm install
+npm run dev -- --host
+</pre>
+
+<hr>
+
+<h2>Frontend routes (React Router)</h2>
+<p>Defined in <code>frontend/src/App.tsx</code>:</p>
+
+<table style="border-collapse: collapse; width:100%;">
+  <tr style="background:#f5f5f5;">
+    <th style="border:1px solid #ddd;padding:8px;text-align:left;">Path</th>
+    <th style="border:1px solid #ddd;padding:8px;text-align:left;">Page/component</th>
+    <th style="border:1px solid #ddd;padding:8px;text-align:left;">Auth required</th>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ddd;padding:8px;"><code>/</code></td>
+    <td style="border:1px solid #ddd;padding:8px;">Landing</td>
+    <td style="border:1px solid #ddd;padding:8px;">No</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ddd;padding:8px;"><code>/sign-in</code></td>
+    <td style="border:1px solid #ddd;padding:8px;">Clerk Sign In UI</td>
+    <td style="border:1px solid #ddd;padding:8px;">No</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ddd;padding:8px;"><code>/sign-up</code></td>
+    <td style="border:1px solid #ddd;padding:8px;">Clerk Sign Up UI</td>
+    <td style="border:1px solid #ddd;padding:8px;">No</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ddd;padding:8px;"><code>/dashboard</code></td>
+    <td style="border:1px solid #ddd;padding:8px;">Dashboard</td>
+    <td style="border:1px solid #ddd;padding:8px;">Yes</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ddd;padding:8px;"><code>/dashboard/scans</code></td>
+    <td style="border:1px solid #ddd;padding:8px;">Recent scans</td>
+    <td style="border:1px solid #ddd;padding:8px;">Yes</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ddd;padding:8px;"><code>/dashboard/fileselector</code></td>
+    <td style="border:1px solid #ddd;padding:8px;">File selector</td>
+    <td style="border:1px solid #ddd;padding:8px;">Yes</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ddd;padding:8px;"><code>/dashboard/camera</code></td>
+    <td style="border:1px solid #ddd;padding:8px;">Camera capture</td>
+    <td style="border:1px solid #ddd;padding:8px;">Yes</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ddd;padding:8px;"><code>/results</code></td>
+    <td style="border:1px solid #ddd;padding:8px;">Results page</td>
+    <td style="border:1px solid #ddd;padding:8px;">No (currently unprotected)</td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>Backend API</h2>
+<p>The backend runs on <code>http://localhost:8000</code> by default.</p>
+
+<h3><code>POST /api/predict</code></h3>
+<ul>
+  <li>Multipart form upload; repeat the <code>files</code> field for multiple images.</li>
+  <li>Returns per-image <code>detections</code> and an <code>annotated_image</code> data URL.</li>
+</ul>
+
+<h3><code>POST /api/track</code></h3>
+<ul>
+  <li>Receives basic telemetry (page, referrer, browser data).</li>
+  <li>The server attempts a GeoIP lookup for the caller IP.</li>
+</ul>
+
+<hr>
+
+<h2>Notes / troubleshooting</h2>
+<ul>
+  <li><b>Missing Clerk key</b>: the app shows a “Missing Clerk Publishable Key” screen if <code>VITE_CLERK_PUBLISHABLE_KEY</code> is not set.</li>
+  <li><b>Model file</b>: the backend loads <code>backend/model/best.onnx</code> on startup; if it’s missing the API will return <code>503</code> on <code>/api/predict</code>.</li>
+  <li><b>CORS</b>: backend currently allows <code>http://localhost:5173</code> and <code>http://localhost:3000</code>.</li>
+</ul>
 
 <hr>
 
