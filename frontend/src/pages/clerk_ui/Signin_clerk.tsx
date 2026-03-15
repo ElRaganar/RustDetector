@@ -201,17 +201,8 @@ export default function SignInPage() {
                 marginBottom: 6,
               }}
             >
-              Sign in
+
             </h2>
-            <p
-              style={{
-                fontSize: 13.5,
-                color: "rgba(255,255,255,.45)",
-                fontWeight: 500,
-              }}
-            >
-              Welcome back — pick up where you left off.
-            </p>
           </div>
 
           <SignIn
