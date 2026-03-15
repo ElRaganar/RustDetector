@@ -180,57 +180,77 @@ The modular design of components ensures scalability and maintainability.
 
 <hr>
 
-<h2>Running Locally</h2>
+<h2>Running with Docker</h2>
+
+<p>
+The RustDetector application can be run using <b>Docker</b>. Docker packages the frontend,
+backend, and their dependencies into containers so the application runs the same on any system.
+</p>
+
+<hr>
 
 <h3>Prerequisites</h3>
 
 <ul>
-<li>Node.js + npm</li>
-<li>Python 3.11+</li>
-<li>uv (Python package manager)</li>
+<li>Install <b>Docker</b></li>
+<li>Install <b>Docker Compose</b> (usually included with Docker Desktop)</li>
+<li>Git (to clone the repository)</li>
 </ul>
 
 <hr>
 
-<h3>Frontend Setup (Vite)</h3>
+<h3>Environment Variables</h3>
 
-<p>From the repository root:</p>
-
-<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-npm install
-</pre>
-
-<p>Create a <code>.env</code> file:</p>
+<p>
+Before running the containers, create a <code>.env</code> file in the repository root.
+This file stores environment variables required by the application.
+</p>
 
 <pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_yourkey
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_clerk_publishable_key
 </pre>
 
-<p>Start development server:</p>
-
-<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-npm run dev
-</pre>
-
-<p>Open in browser:</p>
-
-<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-http://localhost:5173/
-</pre>
-
-<p><b>Note:</b> Run the command from the repository root so Vite loads the environment variables.</p>
+<p>
+This key is required for <b>Clerk Authentication</b> to function correctly in the frontend.
+</p>
 
 <hr>
 
-<h3>Backend Setup (FastAPI)</h3>
+<h3>Build and Start Containers</h3>
+
+<p>
+From the repository root directory, run:
+</p>
 
 <pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-cd backend
-uv sync
-uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+docker compose up --build
 </pre>
 
-<p>Backend runs at:</p>
+<p>
+This command will:
+</p>
+
+<ul>
+<li>Build the Docker images for the frontend and backend</li>
+<li>Install all dependencies inside the containers</li>
+<li>Start both services</li>
+</ul>
+
+<hr>
+
+<h3>Access the Application</h3>
+
+<p>
+After the containers start successfully, open the frontend in your browser:
+</p>
+
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+http://localhost:5173
+</pre>
+
+<p>
+Backend API will be available at:
+</p>
 
 <pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
 http://localhost:8000
@@ -238,31 +258,39 @@ http://localhost:8000
 
 <hr>
 
-<h3>Common Issues</h3>
+<h3>Stopping the Containers</h3>
 
-<h4>Clerk Authentication Error</h4>
-
-<ul>
-<li>Ensure <code>.env</code> exists in repository root</li>
-<li>Add full Clerk publishable key</li>
-<li>Restart frontend server</li>
-</ul>
-
-<h4>ONNX Model Path Issue</h4>
-
-<p>Windows path:</p>
+<p>
+To stop the running containers, press:
+</p>
 
 <pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-model\\best.onnx
+CTRL + C
 </pre>
 
-<p>Replace with:</p>
+<p>
+Or run:
+</p>
 
 <pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
-model/best.onnx
+docker compose down
 </pre>
 
-<p>Or use Python <code>pathlib</code> for cross-platform compatibility.</p>
+<hr>
+
+<h3>Rebuilding After Code Changes</h3>
+
+<p>
+If you make changes to the Docker configuration or dependencies, rebuild the containers:
+</p>
+
+<pre style="background:#f6f8fa;padding:10px;border-radius:5px;">
+docker compose up --build
+</pre>
+
+<p>
+This ensures the updated code and dependencies are included in the container.
+</p>
 
 <hr>
 
