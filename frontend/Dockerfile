@@ -1,13 +1,26 @@
-FROM node:20
+# ---------- Build Stage ----------
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Install dependencies
 COPY package*.json ./
-
 RUN npm install
 
+# Copy source code
 COPY . .
 
-EXPOSE 5173
+# Build production files
+RUN npm run build
 
-CMD ["npm", "run", "dev", "--", "--host"]
+
+# ---------- Production Stage ----------
+FROM nginx:alpine
+
+# Copy built files from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Expose web port
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
