@@ -5,6 +5,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import type{ InferenceResult, DashboardStats } from "./Dashboard"; // Make sure these are exported from Dashboard.tsx
 import { API_BASE_URL } from "../../lib/api";
 
+const normalizeDetections = (raw: any): InferenceResult["detections"] => {
+  const slippage = raw?.slippage ?? raw?.Slippage ?? 0;
+  const corrosion = raw?.corrosion ?? raw?.Corrosion ?? 0;
+  const crack = raw?.crack ?? raw?.Crack ?? 0;
+  return {
+    slippage: Number(slippage) || 0,
+    corrosion: Number(corrosion) || 0,
+    crack: Number(crack) || 0,
+  };
+};
+
 interface QueueFile {
   id: string;
   file: File;
@@ -75,7 +86,7 @@ const UploadCard = ({ setResults, isProcessing, setIsProcessing, setStats }: Upl
       const newResults: InferenceResult[] = data.results.map((res: any, index: number) => ({
         originalFile: queue[index].url, 
         annotatedImage: res.annotated_image,
-        detections: res.detections, 
+        detections: normalizeDetections(res.detections),
       }));
 
       // 4. Calculate the stats from this batch to update the StatsPanel

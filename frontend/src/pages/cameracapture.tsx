@@ -4,6 +4,17 @@ import { useNavigate } from "react-router-dom";
 import type { InferenceResult, DashboardStats } from "./dashboard/Dashboard"; // Adjust path if needed
 import { API_BASE_URL } from "../lib/api";
 
+const normalizeDetections = (raw: any) => {
+  const slippage = raw?.slippage ?? raw?.Slippage ?? 0;
+  const corrosion = raw?.corrosion ?? raw?.Corrosion ?? 0;
+  const crack = raw?.crack ?? raw?.Crack ?? 0;
+  return {
+    slippage: Number(slippage) || 0,
+    corrosion: Number(corrosion) || 0,
+    crack: Number(crack) || 0,
+  };
+};
+
 interface CameraCaptureProps {
   setResults: React.Dispatch<React.SetStateAction<InferenceResult[]>>;
   setStats: React.Dispatch<React.SetStateAction<DashboardStats>>;
@@ -123,7 +134,7 @@ const CameraCapture = ({ setResults, setStats }: CameraCaptureProps) => {
       const newResults: InferenceResult[] = data.results.map((res: any) => ({
         originalFile: previewUrl, 
         annotatedImage: res.annotated_image,
-        detections: res.detections, 
+        detections: normalizeDetections(res.detections),
       }));
 
       let newCorrosionCount = 0;

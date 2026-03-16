@@ -17,14 +17,16 @@ from PIL import Image
 # ==========================================
 # 1. AI CONFIGURATION & GLOBALS
 # ==========================================
-# We match the ONNX metadata exactly, using lowercase for consistency
-CLASSES = ["corrosion", "slippage", "corrosion", "crack"]
+# Match the ONNX metadata class order exactly.
+# From `best.onnx` metadata: {0: "Slippage", 1: "corrosion", 2: "crack"}
+CLASS_DISPLAY = ["Slippage", "corrosion", "crack"]
+# Stable API keys expected by the frontend.
+CLASS_KEYS = ["slippage", "corrosion", "crack"]
 
 COLORS = {
-    0: (200, 0, 0),     # corrosion
-    1: (255, 100, 0),   # slippage
-    2: (200, 0, 0),     # corrosion (duplicate handled)
-    3: (0, 255, 255)    # crack
+    0: (0, 165, 255),   # Slippage (orange) - BGR (OpenCV)
+    1: (0, 0, 255),     # corrosion (red) - BGR
+    2: (255, 255, 0),   # crack (cyan) - BGR
 }
 INPUT_WIDTH = 640
 INPUT_HEIGHT = 640
@@ -170,8 +172,27 @@ def predict_batch(files: List[UploadFile] = File(...)):
     batch_tensor = np.stack(batch_tensor)
 
     # --- INFERENCE ---
-    outputs = session.run(None, {input_name: batch_tensor})
-    predictions_batch = outputs[0]
+    input_shape = session.get_inputs()[0].shape
+    fixed_batch_1 = (
+        isinstance(input_shape, (list, tuple))
+        and len(input_shape) >= 1
+        and isinstance(input_shape[0], int)
+        and input_shape[0] == 1
+    )
+
+    if fixed_batch_1 and batch_tensor.shape[0] != 1:
+        per_image_outputs = []
+        for i in range(batch_tensor.shape[0]):
+            out0 = session.run(None, {input_name: batch_tensor[i : i + 1]})[0]
+            per_image_outputs.append(out0)
+
+        first = per_image_outputs[0]
+        if first.ndim >= 1 and first.shape[0] == 1:
+            predictions_batch = np.concatenate(per_image_outputs, axis=0)
+        else:
+            predictions_batch = np.stack(per_image_outputs, axis=0)
+    else:
+        predictions_batch = session.run(None, {input_name: batch_tensor})[0]
     
     results = []
     conf_threshold = 0.5
@@ -179,11 +200,25 @@ def predict_batch(files: List[UploadFile] = File(...)):
 
     # --- POST-PROCESS BATCH ---
     for b in range(len(files)):
-        predictions = predictions_batch[b].T 
+        pred = predictions_batch[b]
+        if pred.ndim != 2:
+            pred = np.squeeze(pred)
+
+        # Handle common Ultralytics ONNX layouts:
+        # - (C, N) where C = 4 + num_classes  -> transpose to (N, C)
+        # - (N, C) already                   -> keep as-is
+        if pred.ndim != 2:
+            raise HTTPException(status_code=500, detail=f"Unexpected model output shape: {pred.shape}")
+
+        expected_c = 4 + len(CLASS_DISPLAY)
+        if pred.shape[0] == expected_c and pred.shape[1] != expected_c:
+            predictions = pred.T
+        else:
+            predictions = pred
         orig_data = original_images_data[b]
         
         # Copy to avoid modifying the original array reference multiple times
-        img_to_draw = orig_data["image"].copy() 
+        img_to_draw = cv2.cvtColor(orig_data["image"], cv2.COLOR_RGB2BGR)
         orig_w = orig_data["width"]
         orig_h = orig_data["height"]
 
@@ -195,6 +230,8 @@ def predict_batch(files: List[UploadFile] = File(...)):
             
             if max_score >= conf_threshold:
                 class_id = np.argmax(classes_scores)
+                if class_id >= len(CLASS_DISPLAY):
+                    continue
                 
                 # Center X, Center Y, Width, Height
                 x, y, w, h = row[0], row[1], row[2], row[3]
@@ -212,23 +249,23 @@ def predict_batch(files: List[UploadFile] = File(...)):
                 class_ids.append(class_id)
 
         indices = cv2.dnn.NMSBoxes(boxes, scores, conf_threshold, nms_threshold)
-        class_counts = {cls: 0 for cls in CLASSES}
+        class_counts = {key: 0 for key in CLASS_KEYS}
 
         if len(indices) > 0:
             for i in indices.flatten():
                 box = boxes[i]
                 left, top, w, h = box[0], box[1], box[2], box[3]
                 class_id = class_ids[i]
-                class_name = CLASSES[class_id]
+                class_name = CLASS_DISPLAY[class_id]
                 color = COLORS.get(class_id, (0, 255, 0))
 
-                class_counts[class_name] += 1
+                class_counts[CLASS_KEYS[class_id]] += 1
 
                 cv2.rectangle(img_to_draw, (left, top), (left + w, top + h), color, 3)
                 label = f"{class_name}: {scores[i]:.2f}"
                 cv2.putText(img_to_draw, label, (left, max(top - 10, 15)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
-        final_img_pil = Image.fromarray(img_to_draw)
+        final_img_pil = Image.fromarray(cv2.cvtColor(img_to_draw, cv2.COLOR_BGR2RGB))
         buffer = BytesIO()
         final_img_pil.save(buffer, format="JPEG")
         encoded_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
