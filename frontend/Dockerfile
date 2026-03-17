@@ -19,6 +19,8 @@ FROM nginx:alpine
 
 # Copy built files from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
+# Custom nginx config to support SPA routing and backend proxying
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose web port
 EXPOSE 80
