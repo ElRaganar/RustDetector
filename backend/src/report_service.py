@@ -93,6 +93,10 @@ def _section_title(text: str, styles):
     return Paragraph(text, styles["SectionTitle"])
 
 
+def _table_cell(text, styles):
+    return Paragraph(str(text), styles["Body"])
+
+
 def generate_session_report(data, output_path="report.pdf"):
     output_dir = dirname(output_path)
     if output_dir and not isdir(output_dir):
@@ -246,20 +250,23 @@ def generate_session_report(data, output_path="report.pdf"):
 
     elements.append(_section_title("Detailed Detection Table", styles))
     detection_rows = [[
-        "Detection ID",
-        "Image",
-        "Confidence",
-        "Bounding Box (x, y, w, h)",
+        _table_cell("Detection ID", styles),
+        _table_cell("Image", styles),
+        _table_cell("Confidence", styles),
+        _table_cell("Bounding Box (x, y, w, h)", styles),
     ]]
     for image in data.get("images", []):
         for det in image.get("detection_items", []):
             bbox = det.get("bbox", [0, 0, 0, 0])
             detection_rows.append(
                 [
-                    det.get("id", "N/A"),
-                    image.get("filename", "N/A"),
-                    f"{float(det.get('confidence', 0)) * 100:.2f}%",
-                    f"({int(bbox[0])}, {int(bbox[1])}, {int(bbox[2])}, {int(bbox[3])})",
+                    _table_cell(det.get("id", "N/A"), styles),
+                    _table_cell(image.get("filename", "N/A"), styles),
+                    _table_cell(f"{float(det.get('confidence', 0)) * 100:.2f}%", styles),
+                    _table_cell(
+                        f"({int(bbox[0])}, {int(bbox[1])},<br/>{int(bbox[2])}, {int(bbox[3])})",
+                        styles,
+                    ),
                 ]
             )
 
@@ -268,7 +275,7 @@ def generate_session_report(data, output_path="report.pdf"):
     else:
         detail_table = Table(
             detection_rows,
-            colWidths=[1.2 * inch, 2.0 * inch, 1.1 * inch, 2.4 * inch],
+            colWidths=[0.95 * inch, 2.75 * inch, 0.9 * inch, 2.1 * inch],
             repeatRows=1,
             hAlign="LEFT",
         )
@@ -279,11 +286,13 @@ def generate_session_report(data, output_path="report.pdf"):
                     ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
                     ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
                     ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
-                    ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+                    ("FONTSIZE", (0, 0), (-1, -1), 7.5),
                     ("GRID", (0, 0), (-1, -1), 0.35, colors.HexColor("#D1D5DB")),
                     ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#FAFAF9")]),
                     ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                    ("PADDING", (0, 0), (-1, -1), 5),
+                    ("ALIGN", (0, 0), (0, -1), "CENTER"),
+                    ("ALIGN", (2, 0), (2, -1), "CENTER"),
+                    ("PADDING", (0, 0), (-1, -1), 4),
                 ]
             )
         )
