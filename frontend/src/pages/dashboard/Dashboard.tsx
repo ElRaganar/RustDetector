@@ -39,7 +39,7 @@ const Dashboard = ({ results, setResults, stats, setStats }: DashboardProps) => 
     <div className="dash flex h-screen bg-[#0a0a0a]">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-y-auto">
-        <Topbar />
+        <Topbar results={results} />
         <main className="flex-1 p-8 grid grid-cols-12 gap-6">
           <div className="col-span-12 xl:col-span-7 flex flex-col gap-6">
             
