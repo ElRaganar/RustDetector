@@ -1,10 +1,12 @@
 from fastapi import FastAPI, Request, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
-from typing import List
+from typing import List, Optional, Dict
 from datetime import datetime, timezone
 from pathlib import Path
+from uuid import uuid4
 import httpx
 import uvicorn
 import cv2
@@ -15,6 +17,19 @@ import platform
 import psutil
 from io import BytesIO
 from PIL import Image
+
+try:
+    from .report_service import (
+        generate_session_report,
+        risk_assessment_from_severity,
+        severity_from_corrosion_count,
+    )
+except ImportError:
+    from report_service import (
+        generate_session_report,
+        risk_assessment_from_severity,
+        severity_from_corrosion_count,
+    )
 
 # ==========================================
 # 1. AI CONFIGURATION & GLOBALS
@@ -34,6 +49,9 @@ INPUT_HEIGHT = 640
 
 ml_models  = {}
 start_time = datetime.now(timezone.utc)   # recorded once at startup
+scan_history: List[Dict] = []  # in-memory scan log for report generation
+REPORT_DIR = Path(__file__).resolve().parent / "reports"
+REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ==========================================
 # 2. LIFESPAN: Load Model into RAM
@@ -215,6 +233,73 @@ async def track_user(data: TrackingData, request: Request):
 
 
 # ==========================================
+# REPORT API MODELS
+# ==========================================
+class GenerateReportRequest(BaseModel):
+    scan_id: Optional[str] = None
+    user_name: Optional[str] = "Anonymous"
+
+
+def _encode_pil_image(image: Image.Image) -> str:
+    buffer = BytesIO()
+    image.save(buffer, format="JPEG", quality=92)
+    encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    return f"data:image/jpeg;base64,{encoded}"
+
+
+def _build_report_data(scan_info: Dict, user_name: Optional[str] = None) -> Dict:
+    corrosion_count = int(scan_info["total_corrosion"])
+    severity = severity_from_corrosion_count(corrosion_count)
+    risk_summary = risk_assessment_from_severity(severity, corrosion_count)
+
+    images = []
+    for image in scan_info["results"]:
+        detection_items = image.get("detection_items", [])
+        image_detection_count = len(detection_items)
+        image_avg_confidence = (
+            sum(item["confidence"] for item in detection_items) / image_detection_count
+            if image_detection_count
+            else 0.0
+        )
+        images.append({
+            "filename": image["filename"],
+            "original_image": image.get("original_image"),
+            "annotated_image": image["annotated_image"],
+            "detection_count": image_detection_count,
+            "corrosion_count": image["detections"].get("corrosion", 0),
+            "avg_confidence": round(image_avg_confidence * 100, 2),
+            "detection_items": detection_items,
+        })
+
+    return {
+        "project_name": "RustDetector",
+        "report_title": "Corrosion Detection Report",
+        "scan_id": scan_info["scan_id"],
+        "scan_time": scan_info["scan_time"],
+        "user_name": user_name or scan_info.get("user_name") or "Anonymous",
+        "total_images": scan_info["total_images"],
+        "total_detections": scan_info["total_detections"],
+        "total_corrosion": corrosion_count,
+        "avg_confidence": round(scan_info["avg_confidence"] * 100, 2),
+        "severity": severity,
+        "risk_assessment": risk_summary,
+        "images": images,
+    }
+
+
+def _generate_report_for_scan(scan_info: Dict, user_name: Optional[str] = None) -> Dict:
+    scan_id = scan_info["scan_id"]
+    output_file = REPORT_DIR / f"RustDetector_Report_{scan_id}.pdf"
+    report_data = _build_report_data(scan_info, user_name=user_name)
+    generate_session_report(report_data, output_path=str(output_file))
+    scan_info["report_ready"] = True
+    scan_info["report_generated_at"] = datetime.now(timezone.utc).isoformat()
+    if user_name:
+        scan_info["user_name"] = user_name
+    return report_data
+
+
+# ==========================================
 # 6. INFERENCE ENDPOINT (BATCH)
 #
 
@@ -263,6 +348,7 @@ def predict_batch(files: List[UploadFile] = File(...)):
 
             original_images_data.append({
                 "image":    orig_np,
+                "original_image": _encode_pil_image(img_pil),
                 "filename": file.filename,
                 "ratio":    scale_ratio,
                 "pad_left": pad_left,   # renamed from pad_w for clarity
@@ -301,6 +387,7 @@ def predict_batch(files: List[UploadFile] = File(...)):
             img_to_draw = cv2.cvtColor(orig_data["image"], cv2.COLOR_RGB2BGR)
 
             boxes, scores, class_ids = [], [], []
+            selected_detections = []
 
             for row in pred:
                 if is_end2end:
@@ -319,23 +406,16 @@ def predict_batch(files: List[UploadFile] = File(...)):
                 if class_id >= len(CLASS_DISPLAY):
                     continue
 
-                # ── COORDINATE MAPPING (THE CRITICAL FIX) ──────────────
-                # cx, cy, w, h are in padded-image space.
-                # Step 1: remove letterbox padding from the centre coordinates.
-                # Step 2: scale all four values back to original image pixels.
-                # NOTE:  w and h have NO padding offset — only the ratio matters.
                 orig_cx = (cx - orig_data["pad_left"]) / orig_data["ratio"]
                 orig_cy = (cy - orig_data["pad_top"])  / orig_data["ratio"]
                 orig_w  =  w                           / orig_data["ratio"]
                 orig_h  =  h                           / orig_data["ratio"]
-                # ────────────────────────────────────────────────────────
 
                 x1 = int(orig_cx - orig_w / 2)
                 y1 = int(orig_cy - orig_h / 2)
                 x2 = int(orig_cx + orig_w / 2)
                 y2 = int(orig_cy + orig_h / 2)
 
-                # Clamp to image boundaries
                 x1 = max(0, x1);  y1 = max(0, y1)
                 x2 = min(orig_data["width"],  x2)
                 y2 = min(orig_data["height"], y2)
@@ -343,7 +423,6 @@ def predict_batch(files: List[UploadFile] = File(...)):
                 box_w = x2 - x1
                 box_h = y2 - y1
 
-                # Skip degenerate boxes
                 if box_w <= 0 or box_h <= 0:
                     continue
 
@@ -351,7 +430,6 @@ def predict_batch(files: List[UploadFile] = File(...)):
                 scores.append(float(max_score))
                 class_ids.append(class_id)
 
-            # Non-maximum suppression
             indices = cv2.dnn.NMSBoxes(boxes, scores, conf_threshold, nms_threshold)
 
             class_counts = {key: 0 for key in CLASS_KEYS}
@@ -365,41 +443,147 @@ def predict_batch(files: List[UploadFile] = File(...)):
 
                     class_counts[CLASS_KEYS[class_id]] += 1
 
-                    # Draw bounding box
+                    selected_detections.append({
+                        "id": f"{b+1}-{i+1}",
+                        "class": class_name,
+                        "confidence": float(scores[i]),
+                        "bbox": [int(x1), int(y1), int(bw), int(bh)],
+                    })
+
                     cv2.rectangle(img_to_draw, (x1, y1), (x1 + bw, y1 + bh), color, 6)
 
-                    # Draw label with background for readability
                     label      = f"{class_name}: {scores[i]:.2f}"
                     label_y    = max(y1 - 10, 15)
                     (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)
                     cv2.rectangle(img_to_draw,
                                   (x1, label_y - th - 4),
                                   (x1 + tw + 4, label_y + 4),
-                                  color, -1)           # filled background
+                                  color, -1)
                     cv2.putText(img_to_draw, label,
                                 (x1 + 2, label_y),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7,
-                                (0, 0, 0),              # black text on coloured bg
+                                (0, 0, 0),
                                 2)
 
-            # Encode annotated image to base64 JPEG
             final_img_pil = Image.fromarray(cv2.cvtColor(img_to_draw, cv2.COLOR_BGR2RGB))
-            buffer        = BytesIO()
-            final_img_pil.save(buffer, format="JPEG", quality=92)
-            encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
+            encoded_image = _encode_pil_image(final_img_pil)
 
             results.append({
-                "filename":       orig_data["filename"],
-                "detections":     class_counts,
-                "annotated_image": f"data:image/jpeg;base64,{encoded_image}",
+                "filename":        orig_data["filename"],
+                "original_image":  orig_data["original_image"],
+                "detections":      class_counts,
+                "annotated_image": encoded_image,
+                "detection_items": selected_detections,
             })
 
-        return {"status": "success", "results": results}
+        # Persist session in history for report generation
+        scan_id    = str(uuid4())
+        scan_time  = datetime.now(timezone.utc).isoformat()
+        total_detections = sum(
+            v for image in results for v in image["detections"].values()
+        )
+        total_corrosion = sum(
+            image["detections"].get("corrosion", 0) for image in results
+        )
+        avg_confidence = (
+            sum(det["confidence"] for image in results for det in image["detection_items"]) /
+            max(1, sum(len(image["detection_items"]) for image in results))
+        )
+
+        scan_history.append({
+            "scan_id": scan_id,
+            "scan_time": scan_time,
+            "files": [r["filename"] for r in results],
+            "total_images": len(results),
+            "total_detections": int(total_detections),
+            "total_corrosion": int(total_corrosion),
+            "avg_confidence": round(avg_confidence, 2),
+            "severity": severity_from_corrosion_count(int(total_corrosion)),
+            "user_name": "Operator",
+            "report_ready": False,
+            "results": results,
+        })
+
+        # Keep only the latest 30 entries to avoid unbounded memory growth
+        if len(scan_history) > 30:
+            scan_history.pop(0)
+
+        latest_scan = scan_history[-1]
+        _generate_report_for_scan(latest_scan, user_name=latest_scan.get("user_name"))
+
+        return {
+            "status": "success",
+            "scan_id": scan_id,
+            "scan_time": scan_time,
+            "report_url": f"/api/report/{scan_id}",
+            "results": results,
+        }
 
     except Exception as e:
         print(f"❌ Inference Error: {e}")
         raise HTTPException(status_code=500, detail=f"Model Inference Error: {str(e)}")
 
+
+@app.post("/api/generate-report")
+def generate_report_endpoint(request: GenerateReportRequest):
+    if not scan_history:
+        raise HTTPException(status_code=404, detail="No scan history available to generate report.")
+
+    if request.scan_id:
+        scan_info = next((scan for scan in scan_history if scan["scan_id"] == request.scan_id), None)
+        if scan_info is None:
+            raise HTTPException(status_code=404, detail="Scan ID not found")
+    else:
+        scan_info = scan_history[-1]
+
+    scan_id = scan_info["scan_id"]
+    _generate_report_for_scan(scan_info, user_name=request.user_name)
+
+    return {
+        "status": "success",
+        "report_id": scan_id,
+        "report_url": f"/api/report/{scan_id}",
+        "download_url": f"/api/report/{scan_id}",
+        "message": "Report generated successfully",
+    }
+
+
+@app.get("/api/report-history")
+def report_history():
+    history = [
+        {
+            "scan_id": r["scan_id"],
+            "scan_time": r["scan_time"],
+            "user_name": r.get("user_name", "Anonymous"),
+            "total_images": r["total_images"],
+            "total_detections": r["total_detections"],
+            "total_corrosion": r["total_corrosion"],
+            "avg_confidence": r["avg_confidence"],
+            "severity": r.get("severity", severity_from_corrosion_count(r["total_corrosion"])),
+            "risk_assessment": risk_assessment_from_severity(
+                r.get("severity", severity_from_corrosion_count(r["total_corrosion"])),
+                r["total_corrosion"],
+            ),
+            "report_ready": r.get("report_ready", False),
+            "view_url": f"/api/report/{r['scan_id']}",
+            "download_url": f"/api/report/{r['scan_id']}",
+        }
+        for r in scan_history
+    ]
+    return {"status": "success", "history": history}
+
+
+@app.get("/api/report/{scan_id}")
+def serve_report(scan_id: str):
+    file_path = REPORT_DIR / f"RustDetector_Report_{scan_id}.pdf"
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Report PDF not found. Generate a report first.")
+
+    return FileResponse(
+        path=file_path,
+        media_type="application/pdf",
+        filename=f"RustDetector_Report_{scan_id}.pdf",
+    )
 
 # ── Run directly ──────────────────────────────────────────────────────────────
 # uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload

@@ -27,3 +27,4 @@
 # Project-specific: don't send training artifacts/test images by default
 backend/model/testimage
 backend/model/*.pt
+backend/src/reports
