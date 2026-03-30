@@ -59,16 +59,15 @@ const Topbar = ({ results }: TopbarProps) => {
             <button
               type="button"
               onClick={() => setShowDropdown((prev) => !prev)}
-              className="
-                relative
-                p-2
-                rounded-xl
-                hover:bg-gray-100
-                transition
-              "
+              className={`relative p-2 rounded-xl transition ${
+                showDropdown ? "bg-[#e87c3e] shadow-lg shadow-[#e87c3e]/30" : "hover:bg-gray-100"
+              }`}
               aria-label="Show high risk images"
             >
-              <Bell size={20} className="text-gray-600" />
+              <Bell
+                size={20}
+                className={showDropdown ? "text-white" : "text-gray-600"}
+              />
               {flaggedResults.length > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-red-500 text-[10px] leading-4 text-white font-semibold text-center">
                   {flaggedResults.length}
@@ -77,15 +76,28 @@ const Topbar = ({ results }: TopbarProps) => {
             </button>
 
             {showDropdown && (
-              <div className="absolute right-0 top-full z-[200] mt-3 w-[360px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
-                <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+              <div
+                className="absolute right-0 top-full z-[200] mt-3 w-[360px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-3xl border shadow-2xl backdrop-blur-sm"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(232,124,62,0.98) 0%, rgba(193,88,31,0.98) 100%)",
+                  borderColor: "rgba(255,255,255,0.18)",
+                  boxShadow: "0 24px 60px rgba(92, 33, 5, 0.35)",
+                }}
+              >
+                <div
+                  className="flex items-center justify-between px-4 py-4"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.16)" }}
+                >
                   <div>
-                    <p className="text-sm font-semibold text-[#2B2D42]">Risk Images</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-semibold text-white">Risk Images</p>
+                    <p className="text-xs text-orange-100/90">
                       {flaggedResults.length} item{flaggedResults.length !== 1 ? "s" : ""} in this session
                     </p>
                   </div>
-                  <AlertTriangle size={16} className="text-red-500" />
+                  <div className="rounded-full bg-white/15 p-2">
+                    <AlertTriangle size={16} className="text-white" />
+                  </div>
                 </div>
 
                 {flaggedResults.length > 0 ? (
@@ -103,16 +115,16 @@ const Topbar = ({ results }: TopbarProps) => {
                       return (
                         <div
                           key={`${result.annotatedImage}-${index}`}
-                          className={`rounded-xl p-3 ${
+                          className={`rounded-2xl p-3 shadow-lg ${
                             riskLevel === "High"
-                              ? "border border-red-100 bg-red-50/50"
-                              : "border border-orange-100 bg-orange-50/50"
+                              ? "border border-white/20 bg-[#fff4ef]"
+                              : "border border-white/20 bg-[#fff8ee]"
                           }`}
                         >
                           <img
                             src={result.annotatedImage}
                             alt={`${riskLevel} risk scan ${index + 1}`}
-                            className="h-40 w-full rounded-lg object-cover"
+                            className="h-40 w-full rounded-xl object-cover"
                           />
                           <div className="mt-3 flex items-start justify-between gap-3">
                             <div>
@@ -124,8 +136,8 @@ const Topbar = ({ results }: TopbarProps) => {
                               </p>
                             </div>
                             <span
-                              className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white ${
-                                riskLevel === "High" ? "bg-red-500" : "bg-orange-500"
+                              className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white ${
+                                riskLevel === "High" ? "bg-[#d62828]" : "bg-[#f77f00]"
                               }`}
                             >
                               {riskLevel} Risk
@@ -137,8 +149,8 @@ const Topbar = ({ results }: TopbarProps) => {
                   </div>
                 ) : (
                   <div className="px-4 py-8 text-center">
-                    <p className="text-sm font-semibold text-[#2B2D42]">No risk images yet</p>
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="text-sm font-semibold text-white">No risk images yet</p>
+                    <p className="mt-1 text-xs text-orange-100/90">
                       Analyze images and medium or high risk results will appear here.
                     </p>
                   </div>
