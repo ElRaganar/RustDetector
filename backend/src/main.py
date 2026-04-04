@@ -24,12 +24,15 @@ try:
         risk_assessment_from_severity,
         severity_from_corrosion_count,
     )
-except ImportError:
-    from report_service import (
-        generate_session_report,
-        risk_assessment_from_severity,
-        severity_from_corrosion_count,
-    )
+except ModuleNotFoundError as e:
+    if e.name in {"src.report_service", "report_service"}:
+        from report_service import (
+            generate_session_report,
+            risk_assessment_from_severity,
+            severity_from_corrosion_count,
+        )
+    else:
+        raise
 
 # ==========================================
 # 1. AI CONFIGURATION & GLOBALS
