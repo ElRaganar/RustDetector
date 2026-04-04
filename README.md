@@ -1,3 +1,9 @@
+
+![Screenshot 2026-04-04 at 9 57 37 AM](https://github.com/user-attachments/assets/03e27a9b-2044-4488-898c-4cc025dcb3c3)
+![Screenshot 2026-04-04 at 9 58 01 AM](https://github.com/user-attachments/assets/8ac4a034-0455-4c06-a11d-4d4a4732b6f2)
+![Screenshot 2026-04-04 at 9 59 18 AM](https://github.com/user-attachments/assets/37faf0d4-d288-4b39-8b0f-d24fc4042331)
+![Screenshot 2026-04-04 at 10 09 58 AM](https://github.com/user-attachments/assets/8e455723-a5d1-48c7-883b-69d80284badd)
+
 <div style="font-family: Arial, sans-serif; line-height:1.6;">
 
 <h1 style="text-align:center; margin-bottom: 0.25rem;">RustDetector</h1>
