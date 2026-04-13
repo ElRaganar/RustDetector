@@ -1,7 +1,9 @@
 from base64 import b64decode
+from datetime import datetime
 from io import BytesIO
 from os import makedirs
 from os.path import dirname, isdir
+from zoneinfo import ZoneInfo
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
@@ -97,6 +99,25 @@ def _table_cell(text, styles):
     return Paragraph(str(text), styles["Body"])
 
 
+INDIA_TZ = ZoneInfo("Asia/Kolkata")
+
+
+def _format_scan_time_for_india(value: str) -> str:
+    if not value:
+        return "N/A"
+
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return value
+
+    if parsed.tzinfo is None:
+        return value
+
+    india_time = parsed.astimezone(INDIA_TZ)
+    return india_time.strftime("%d %b %Y, %I:%M:%S %p IST")
+
+
 def generate_session_report(data, output_path="report.pdf"):
     output_dir = dirname(output_path)
     if output_dir and not isdir(output_dir):
@@ -167,9 +188,9 @@ def generate_session_report(data, output_path="report.pdf"):
     elements.append(Paragraph(data.get("report_title", "Corrosion Detection Report"), styles["Heading"]))
 
     metadata_rows = [
-        ["Date & Time of Scan", data.get("scan_time", "N/A")],
+        ["Date & Time of Scan", _format_scan_time_for_india(data.get("scan_time", "N/A"))],
         ["Scan ID", data.get("scan_id", "N/A")],
-        ["User Name", data.get("user_name", "Anonymous")],
+        ["User Name", data.get("user_name", "Corrosion Report")],
         ["Severity", severity],
     ]
     metadata_table = Table(metadata_rows, colWidths=[1.8 * inch, 4.9 * inch], hAlign="LEFT")

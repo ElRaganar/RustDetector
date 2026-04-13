@@ -240,7 +240,7 @@ async def track_user(data: TrackingData, request: Request):
 # ==========================================
 class GenerateReportRequest(BaseModel):
     scan_id: Optional[str] = None
-    user_name: Optional[str] = "Anonymous"
+    user_name: Optional[str] = "Corrosion Report"
 
 
 def _encode_pil_image(image: Image.Image) -> str:
@@ -279,7 +279,7 @@ def _build_report_data(scan_info: Dict, user_name: Optional[str] = None) -> Dict
         "report_title": "Corrosion Detection Report",
         "scan_id": scan_info["scan_id"],
         "scan_time": scan_info["scan_time"],
-        "user_name": user_name or scan_info.get("user_name") or "Anonymous",
+        "user_name": user_name or scan_info.get("user_name") or "Corrosion Report",
         "total_images": scan_info["total_images"],
         "total_detections": scan_info["total_detections"],
         "total_corrosion": corrosion_count,
@@ -557,7 +557,7 @@ def report_history():
         {
             "scan_id": r["scan_id"],
             "scan_time": r["scan_time"],
-            "user_name": r.get("user_name", "Anonymous"),
+            "user_name": r.get("user_name", "Corrosion Report"),
             "total_images": r["total_images"],
             "total_detections": r["total_detections"],
             "total_corrosion": r["total_corrosion"],
