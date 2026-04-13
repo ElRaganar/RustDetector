@@ -8,7 +8,7 @@ function CameraPermission({ onAllow, onCancel }: any) {
       </h2>
 
       <p className="mt-2 text-center text-gray-600">
-        RustAI needs camera permission to capture images for analysis.
+        RustDetector needs camera permission to capture images for analysis.
         Your privacy is important — we never store live feeds.
       </p>
 

@@ -109,7 +109,7 @@ export default function SignInPage() {
               letterSpacing: "-.03em",
             }}
           >
-            RUSTAI
+            RUSTDETECTOR
           </span>
         </div>
 

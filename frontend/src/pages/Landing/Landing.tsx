@@ -375,7 +375,7 @@ const Landing = () => {
             letterSpacing: "-0.01em",
           }}
         >
-          RUST<span style={{ color: "#fff" }}>AI</span>
+          RUST<span style={{ color: "#fff" }}>DETECTOR</span>
         </span>
         <div
           style={{ width: 1, height: 18, background: "rgba(232,124,62,0.25)" }}

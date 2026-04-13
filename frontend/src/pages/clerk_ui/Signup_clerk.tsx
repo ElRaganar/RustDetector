@@ -156,7 +156,7 @@ export default function SignUpPage() {
               letterSpacing: "-0.03em",
             }}
           >
-            RUSTAI
+            RUSTDETECTOR
           </span>
         </div>
 
@@ -210,7 +210,7 @@ export default function SignUpPage() {
               maxWidth: 420,
             }}
           >
-            RUSTAI gives you the power of Rust-speed AI tooling — right in your
+            RUSTDETECTOR gives you the power of Rust-speed AI tooling — right in your
             workflow. No limits. No excuses.
           </p>
         </div>
