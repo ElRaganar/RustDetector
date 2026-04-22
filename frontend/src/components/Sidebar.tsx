@@ -1,4 +1,4 @@
-import { LayoutDashboard, History, Settings } from "lucide-react";
+import { LayoutDashboard, History } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -27,13 +27,6 @@ const Sidebar = () => {
           Recent Scans
         </Link>
 
-        <Link
-          to="/dashboard/settings"
-          className={itemClass("/dashboard/settings")}
-        >
-          <Settings size={18} />
-          Settings
-        </Link>
       </nav>
     </aside>
   );
